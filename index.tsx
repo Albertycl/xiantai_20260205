@@ -284,10 +284,20 @@ const App: React.FC = () => {
                   {day.events.map((event, index) => (
                     <button key={event.id} onClick={() => handleFocusLocation(event)} className="w-full p-3 text-left hover:bg-slate-50 flex gap-3 transition-colors items-start group">
                       <span className="text-[11px] font-bold h-5 w-5 rounded-full flex items-center justify-center text-white shrink-0 mt-0.5" style={{ backgroundColor: day.color }}>{index + 1}</span>
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <div className="text-sm font-semibold truncate flex items-center gap-1">{event.location} {getEventIcon(event.type)}</div>
                         <div className="text-xs text-slate-500 truncate">{event.activity}</div>
                       </div>
+                      <a
+                        href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-2 text-slate-300 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-colors shrink-0"
+                        title="在 Google 地圖中開啟"
+                      >
+                        <MapIcon size={16} />
+                      </a>
                     </button>
                   ))}
                 </div>
