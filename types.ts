@@ -19,6 +19,19 @@ export interface TripEvent {
     people?: number;
     period?: string;
   };
+  flight?: {
+    airline: string;
+    flightNumber: string;
+    departureTime: string;
+    arrivalTime: string;
+    departureAirport: string;
+    arrivalAirport: string;
+    terminal?: string;
+    class?: string;
+    baggage?: string;
+    status?: string;
+    duration?: string;
+  };
 }
 
 export interface DayPlan {

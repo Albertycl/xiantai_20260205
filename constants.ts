@@ -8,7 +8,30 @@ export const ITINERARY_DATA: DayPlan[] = [
     title: '抵達、燈飾與壽司迎賓',
     color: '#ef4444', // Red
     events: [
-      { id: '1-1', day: 1, time: '12:00', location: '成田機場 (NRT)', activity: '抵達機場', notes: '第一航廈', lat: 35.772, lng: 140.392, type: 'flight' },
+      {
+        id: '1-1',
+        day: 1,
+        time: '12:00',
+        location: '成田機場 (NRT)',
+        activity: '抵達機場',
+        notes: '第一航廈',
+        lat: 35.772,
+        lng: 140.392,
+        type: 'flight',
+        flight: {
+          airline: 'EVA AIR 長榮航空',
+          flightNumber: 'BR184',
+          departureTime: '07:55',
+          arrivalTime: '12:00',
+          departureAirport: 'TPE 台北桃園',
+          arrivalAirport: 'NRT 東京成田',
+          terminal: '第一航廈',
+          class: 'V / 經濟艙',
+          baggage: '1PC',
+          status: 'OK',
+          duration: '03:05'
+        }
+      },
       { id: '1-2', day: 1, time: '13:30', location: 'ORIX 租車成田機場店', activity: '取車手續', notes: '準備自駕之旅', lat: 35.765, lng: 140.385, type: 'transport' },
       { id: '1-3', day: 1, time: '15:30', location: '讀賣樂園', activity: '寶石燈飾秀', notes: '必看絕美點燈', lat: 35.625, lng: 139.517, type: 'sightseeing' },
       { id: '1-4', day: 1, time: '20:00', location: '梅丘壽司之美登利', activity: '晚餐', notes: '新百合之丘OPA店', lat: 35.602, lng: 139.508, type: 'food' },
@@ -134,7 +157,30 @@ export const ITINERARY_DATA: DayPlan[] = [
       { id: '5-4', day: 5, time: '12:00', location: '根岸牛舌 吉祥寺店', activity: '午餐', notes: 'Negishi 精選', lat: 35.703, lng: 139.580, type: 'food' },
       { id: '5-5', day: 5, time: '13:00', location: '井之頭恩賜公園', activity: '散步', notes: '舒適綠意', lat: 35.700, lng: 139.576, type: 'sightseeing' },
       { id: '5-6', day: 5, time: '16:39', location: '新宿站', activity: '前往機場', notes: '成田特快 NEX', lat: 35.689, lng: 139.700, type: 'transport' },
-      { id: '5-7', day: 5, time: '20:20', location: '成田機場 (NRT)', activity: '搭機返台', notes: '第一航廈 BR195', lat: 35.772, lng: 140.392, type: 'flight' }
+      {
+        id: '5-7',
+        day: 5,
+        time: '20:20',
+        location: '成田機場 (NRT)',
+        activity: '搭機返台',
+        notes: '第一航廈 BR195',
+        lat: 35.772,
+        lng: 140.392,
+        type: 'flight',
+        flight: {
+          airline: 'EVA AIR 長榮航空',
+          flightNumber: 'BR195',
+          departureTime: '20:20',
+          arrivalTime: '23:25',
+          departureAirport: 'NRT 東京成田',
+          arrivalAirport: 'TPE 台北桃園',
+          terminal: '第一航廈',
+          class: 'Q / 經濟艙',
+          baggage: '2PC',
+          status: 'OK',
+          duration: '04:05'
+        }
+      }
     ]
   }
 ];

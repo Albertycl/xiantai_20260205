@@ -88,7 +88,7 @@ const MapInvalidator = () => {
 };
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'map' | 'itinerary' | 'export' | 'booking'>('map');
+  const [activeTab, setActiveTab] = useState<'map' | 'itinerary' | 'export' | 'booking' | 'flight'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWeather, setShowWeather] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number>(1);
@@ -260,6 +260,9 @@ const App: React.FC = () => {
               </button>
               <button onClick={() => setActiveTab('booking')} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'booking' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-900'}`}>
                 <Ticket size={16} /> <span className="hidden sm:inline">住宿預訂</span>
+              </button>
+              <button onClick={() => setActiveTab('flight')} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'flight' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-900'}`}>
+                <Plane size={16} /> <span className="hidden sm:inline">機票資訊</span>
               </button>
               <button onClick={() => setActiveTab('export')} className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all whitespace-nowrap ${activeTab === 'export' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-600 hover:text-slate-900'}`}>
                 <Download size={16} /> <span className="hidden sm:inline">匯出資料</span>
@@ -578,6 +581,86 @@ const App: React.FC = () => {
                             <MapIcon size={16} />
                             查看地圖位置
                           </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'flight' && (
+            <div className="absolute inset-0 bg-white overflow-y-auto p-6 md:p-10">
+              <div className="max-w-3xl mx-auto">
+                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                  <Plane className="text-emerald-600" /> 機票資訊
+                </h2>
+                <div className="space-y-6">
+                  {ITINERARY_DATA.flatMap(day =>
+                    day.events.filter(e => e.flight).map(e => ({ ...e, dayColor: day.color, dayIdx: day.day }))
+                  ).map((event, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
+                      {/* Header */}
+                      <div className="bg-emerald-600 text-white p-4 flex justify-between items-center">
+                        <div className="flex items-center gap-2 font-bold">
+                          <Plane size={20} />
+                          <span>{event.flight?.airline}</span>
+                        </div>
+                        <div className="text-sm font-mono bg-white/20 px-2 py-1 rounded">
+                          {event.flight?.flightNumber}
+                        </div>
+                      </div>
+
+                      {/* Body */}
+                      <div className="p-6">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-8">
+                          <div className="text-center md:text-left">
+                            <div className="text-4xl font-black text-slate-800 mb-1">{event.flight?.departureAirport.split(' ')[0]}</div>
+                            <div className="text-sm text-slate-500 font-medium">{event.flight?.departureAirport.split(' ')[1]}</div>
+                            <div className="text-2xl font-bold text-emerald-600 mt-2">{event.flight?.departureTime}</div>
+                            <div className="text-xs text-slate-400 mt-1">{event.flight?.terminal}</div>
+                          </div>
+
+                          <div className="flex-1 flex flex-col items-center w-full md:w-auto">
+                            <div className="text-xs text-slate-400 font-bold mb-1 tracking-wider uppercase">Flight Duration</div>
+                            <div className="flex items-center gap-2 w-full justify-center">
+                              <div className="h-[2px] bg-slate-200 flex-1 relative">
+                                <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-slate-300"></div>
+                              </div>
+                              <Plane className="text-slate-300 rotate-90" size={16} />
+                              <div className="h-[2px] bg-slate-200 flex-1 relative">
+                                <div className="absolute left-0 -top-1 w-2 h-2 rounded-full bg-slate-300"></div>
+                              </div>
+                            </div>
+                            <div className="text-xs font-bold text-slate-500 mt-1">{event.flight?.duration}</div>
+                          </div>
+
+                          <div className="text-center md:text-right">
+                            <div className="text-4xl font-black text-slate-800 mb-1">{event.flight?.arrivalAirport.split(' ')[0]}</div>
+                            <div className="text-sm text-slate-500 font-medium">{event.flight?.arrivalAirport.split(' ')[1]}</div>
+                            <div className="text-2xl font-bold text-emerald-600 mt-2">{event.flight?.arrivalTime}</div>
+                            <div className="text-xs text-slate-400 mt-1">Day {event.dayIdx}</div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t border-dashed border-slate-200">
+                          <div>
+                            <div className="text-xs text-slate-400 uppercase font-bold mb-1">Class</div>
+                            <div className="font-medium text-slate-700">{event.flight?.class}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-400 uppercase font-bold mb-1">Baggage</div>
+                            <div className="font-medium text-slate-700">{event.flight?.baggage}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-400 uppercase font-bold mb-1">Status</div>
+                            <div className="font-bold text-emerald-600">{event.flight?.status}</div>
+                          </div>
+                          <div>
+                            <div className="text-xs text-slate-400 uppercase font-bold mb-1">Date</div>
+                            <div className="font-medium text-slate-700">2026/01/{event.dayIdx === 1 ? '20' : '24'}</div>
+                          </div>
                         </div>
                       </div>
                     </div>
