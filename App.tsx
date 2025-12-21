@@ -302,36 +302,53 @@ const App: React.FC = () => {
                 />
                 <MapController center={mapConfig.center} zoom={mapConfig.zoom} />
                 <MapInvalidator />
+                <style>{`
+                  .leaflet-popup-content-wrapper {
+                    padding: 0 !important;
+                    overflow: hidden;
+                    border-radius: 16px !important;
+                  }
+                  .leaflet-popup-content {
+                    margin: 0 !important;
+                    width: auto !important;
+                  }
+                  .leaflet-popup-close-button {
+                    top: 12px !important;
+                    right: 12px !important;
+                    color: #64748b !important;
+                    font-size: 16px !important;
+                  }
+                `}</style>
 
                 {currentDayData && (
                   <React.Fragment>
                     {currentDayData.events.map((event, eventIdx) => (
                       <Marker key={event.id} position={[event.lat, event.lng]} icon={createCustomIcon(currentDayData.color, eventIdx + 1)}>
                         <Popup>
-                          <div className="p-1 min-w-[200px]">
-                            <div className="flex items-center gap-2 mb-2 pb-1 border-b border-slate-100">
-                              <span className="h-6 w-6 rounded-full flex items-center justify-center text-[11px] font-black text-white" style={{ backgroundColor: currentDayData.color }}>{eventIdx + 1}</span>
+                          <div className="p-4 min-w-[240px]">
+                            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+                              <span className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-black text-white shadow-sm" style={{ backgroundColor: currentDayData.color }}>{eventIdx + 1}</span>
                               <div className="flex flex-col">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-0.5">Day {currentDayData.day}</span>
-                                <span className="text-xs font-mono font-bold text-slate-600 leading-none">{event.time}</span>
+                                <span className="text-sm font-mono font-bold text-slate-700 leading-none">{event.time}</span>
                               </div>
                             </div>
-                            <h3 className="font-bold text-sm leading-tight text-slate-800">{event.location}</h3>
-                            <div className="flex items-center gap-1.5 mt-1 text-slate-500 mb-4">
+                            <h3 className="font-bold text-base leading-tight text-slate-800 mb-1">{event.location}</h3>
+                            <div className="flex items-center gap-1.5 text-slate-500 mb-4">
                               {getEventIcon(event.type)}
                               <span className="text-xs font-medium">{event.activity}</span>
                             </div>
                             {event.booking && (
-                              <div className="mb-3 bg-amber-50 border border-amber-100 rounded-lg p-2">
-                                <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs mb-1">
-                                  <Ticket size={12} />
+                              <div className="mb-4 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs mb-2">
+                                  <Ticket size={14} />
                                   <span>預訂資訊</span>
                                 </div>
-                                <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[10px] text-slate-600">
+                                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] text-slate-600">
                                   <div className="text-slate-400">預約編號</div>
-                                  <div className="font-mono font-medium">{event.booking.number}</div>
+                                  <div className="font-mono font-bold">{event.booking.number}</div>
                                   <div className="text-slate-400">金額</div>
-                                  <div className="font-medium">{event.booking.price}</div>
+                                  <div className="font-bold">{event.booking.price}</div>
                                 </div>
                               </div>
                             )}
@@ -339,9 +356,9 @@ const App: React.FC = () => {
                               href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 w-full py-2.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all shadow-md no-underline active:scale-95"
+                              className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:shadow-xl no-underline active:scale-95"
                             >
-                              <MapIcon size={14} />
+                              <MapIcon size={16} />
                               Google 地圖開啟
                             </a>
                           </div>
