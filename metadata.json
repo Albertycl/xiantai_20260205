@@ -1,0 +1,7 @@
+{
+  "name": "Tokyo & Fuji Explorer 2026",
+  "description": "An interactive travel itinerary planner for a 5-day Tokyo and Mount Fuji trip, featuring Leaflet.js mapping, route visualization, and user location tracking.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
