@@ -158,11 +158,11 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-50 text-slate-800 font-sans">
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/30 z-40 md:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/30 z-[900] md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       <aside className={`
-        fixed md:relative z-50 h-full w-80 bg-white border-r shadow-xl transition-all duration-300
+        fixed md:relative z-[1000] h-full w-80 bg-white border-r shadow-xl transition-all duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:w-0 md:opacity-0'}
       `}>
         <div className="flex flex-col h-full">
