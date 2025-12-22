@@ -74,10 +74,10 @@ export const ITINERARY_DATA: DayPlan[] = [
     color: '#3b82f6', // Blue
     events: [
       { id: '2-0', day: 2, time: '08:00', location: 'Hotel Molino Shin-Yuri', activity: '飯店出發', notes: '自駕往御殿場方向', lat: 35.602, lng: 139.508, type: 'stay' },
-      { id: '2-1', day: 2, time: '09:30', location: '富士野生動物園', activity: '叢林巴士、自駕Safari', notes: '親近野生動物', lat: 35.247, lng: 138.838, type: 'sightseeing' },
+      { id: '2-1', day: 2, time: '09:30', location: '富士野生動物園', activity: '叢林巴士、自駕Safari', notes: '親近野生動物', travelTime: '約 1 小時 30 分', lat: 35.247, lng: 138.838, type: 'sightseeing' },
       { id: '2-2', day: 2, time: '11:15', location: '富士野生動物園', activity: 'Super Jungle Bus', notes: '需提早報到', lat: 35.247, lng: 138.838, type: 'sightseeing' },
-      { id: '2-3', day: 2, time: '16:00', location: 'Sawayaka 漢堡 炭焼きレストランさわやか 御殿場インター店', activity: '抽號碼牌', notes: '必吃漢堡排，需提前抽號', lat: 35.294, lng: 138.945, type: 'food' },
-      { id: '2-4', day: 2, time: '17:00', location: '御殿場 Premium Outlets', activity: '逛街購物', notes: '精品與風景', importantNotes: '持長榮登機證換旅行袋', lat: 35.308, lng: 138.966, type: 'shopping' },
+      { id: '2-3', day: 2, time: '16:00', location: 'Sawayaka 漢堡 炭焼きレストランさわやか 御殿場インター店', activity: '抽號碼牌', notes: '必吃漢堡排，需提前抽號', travelTime: '約 40 分', lat: 35.294, lng: 138.945, type: 'food' },
+      { id: '2-4', day: 2, time: '17:00', location: '御殿場 Premium Outlets', activity: '逛街購物', notes: '精品與風景', importantNotes: '持長榮登機證換旅行袋', travelTime: '約 10 分', lat: 35.308, lng: 138.966, type: 'shopping' },
       { id: '2-5', day: 2, time: '21:00', location: '木之花之湯', activity: '溫泉享受', notes: '放鬆身心', lat: 35.305, lng: 138.968, type: 'sightseeing' },
       {
         id: '2-6',

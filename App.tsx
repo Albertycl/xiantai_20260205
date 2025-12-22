@@ -206,6 +206,12 @@ const App: React.FC = () => {
                             <span className="text-[11px] font-bold h-6 w-6 rounded-full flex items-center justify-center border text-white mb-1 shadow-sm" style={{ backgroundColor: day.color, borderColor: 'white' }}>
                               {index + 1}
                             </span>
+                            {event.travelTime && (
+                              <div className="text-[9px] text-slate-400 font-medium mb-0.5 flex items-center justify-center gap-0.5 whitespace-nowrap">
+                                <Car size={10} />
+                                {event.travelTime}
+                              </div>
+                            )}
                             <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">{event.time}</span>
                           </div>
                           <div className="flex-1 min-w-0">
@@ -456,7 +462,8 @@ const App: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="border rounded-xl overflow-hidden shadow-sm">
+                {/* Desktop Table View */}
+                <div className="hidden md:block border rounded-xl overflow-hidden shadow-sm">
                   <table className="min-w-full divide-y divide-slate-200">
                     <thead className="bg-slate-50">
                       <tr>
@@ -536,6 +543,82 @@ const App: React.FC = () => {
                         })}
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden space-y-4">
+                  {ITINERARY_DATA
+                    .filter(day => itineraryFilter === 'all' || day.day === itineraryFilter)
+                    .flatMap(day => day.events.map((e, i) => ({ ...e, dayColor: day.color, order: i + 1, dayIdx: day.day })))
+                    .map((event, idx) => {
+                      const weather = weatherData.find(w => w.day === event.dayIdx);
+                      return (
+                        <div key={`mobile-card-${idx}`} className="bg-white border rounded-xl shadow-sm overflow-hidden">
+                          <div className="p-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: event.dayColor }}>
+                                Day {event.dayIdx}
+                              </span>
+                              <span className="font-mono text-sm font-bold text-slate-600">{event.time}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                              {weather?.icon}
+                              <span>{weather?.temp}</span>
+                            </div>
+                          </div>
+                          <div className="p-4">
+                            <div className="flex justify-between items-start gap-2 mb-2">
+                              <div>
+                                <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
+                                <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
+                              </div>
+                              <a
+                                href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                              >
+                                <ExternalLink size={16} />
+                              </a>
+                            </div>
+
+                            {event.notes && (
+                              <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">
+                                {event.notes}
+                              </div>
+                            )}
+
+                            {event.booking && (
+                              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-100/50">
+                                  <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs">
+                                    <Ticket size={14} />
+                                    <span>住宿預訂</span>
+                                  </div>
+                                  <span className="text-[10px] bg-white/50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-100">
+                                    {event.booking.provider}
+                                  </span>
+                                </div>
+                                <div className="space-y-2 text-xs">
+                                  <div className="flex justify-between">
+                                    <span className="text-slate-400">預約編號</span>
+                                    <span className="font-mono font-bold text-slate-700">{event.booking.number}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-slate-400">金額</span>
+                                    <span className="font-bold text-slate-700">{event.booking.price}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-slate-400">付款方式</span>
+                                    <span className="text-slate-700">{event.booking.payment}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>
