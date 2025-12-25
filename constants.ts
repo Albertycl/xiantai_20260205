@@ -107,17 +107,21 @@ export const ITINERARY_DATA: DayPlan[] = [
     title: '圍爐裏燒烤與新宿之夜',
     color: '#22c55e', // Green
     events: [
-      { id: '3-0', day: 3, time: '08:30', location: 'HOTEL CLAD', activity: '飯店出發', notes: '往山中湖', lat: 35.308, lng: 138.966, type: 'stay' },
-      { id: '3-1', day: 3, time: '09:30', location: '山中湖 KABA BUS', activity: '水陸巴士', notes: '湖上體驗', lat: 35.423, lng: 138.875, type: 'sightseeing' },
-      { id: '3-2', day: 3, time: '11:30', location: '新倉山淺間公園', activity: '參拜/拍照', notes: '忠靈塔必拍', lat: 35.491, lng: 138.804, type: 'sightseeing' },
-      { id: '3-3', day: 3, time: '13:00', location: '山麓園 Sanrokuen', activity: '午餐', notes: '傳統圍爐裏燒烤', lat: 35.485, lng: 138.773, type: 'food' },
+      { id: '3-0', day: 3, time: '08:30', location: 'HOTEL CLAD', activity: '飯店出發', notes: '務必準時出發，確保 10:00 能到橫濱', travelTime: '約 1.5 小時 (東名高速)', lat: 35.308, lng: 138.966, type: 'stay' },
+      { id: '3-1', day: 3, time: '10:00', location: '橫濱紅磚倉庫', activity: '逛街/拍照', notes: '只有約 1 小時，專注拍照逛街', travelTime: '停車：紅磚倉庫停車場', lat: 35.459, lng: 139.642, type: 'sightseeing' },
+      { id: '3-2', day: 3, time: '11:20', location: '前往地標塔', activity: '關鍵移動', notes: '務必準時離開，開車至地標塔停車場', travelTime: '約 10 分鐘', lat: 35.455, lng: 139.631, type: 'transport' },
+      { id: '3-3', day: 3, time: '11:40', location: 'Sky Duck 報到', activity: '報到', notes: '走路 5 分鐘到日本丸紀念公園', lat: 35.454, lng: 139.632, type: 'sightseeing' },
+      { id: '3-4', day: 3, time: '12:00', location: 'Sky Duck 水陸巴士', activity: '水陸巴士體驗', notes: '預約 12:00 班次 (約 50 分鐘)', lat: 35.454, lng: 139.632, type: 'sightseeing' },
+      { id: '3-5', day: 3, time: '13:00', location: 'Landmark Plaza', activity: '午餐', notes: 'Shake Shack、炸豬排等', lat: 35.455, lng: 139.631, type: 'food' },
+      { id: '3-6', day: 3, time: '14:30', location: 'HARBS 下午茶', activity: '下午茶', notes: 'Landmark Plaza 3F 吃草莓蛋糕', lat: 35.455, lng: 139.631, type: 'food' },
+      { id: '3-7', day: 3, time: '15:30', location: '前往東京新宿', activity: '移動', notes: '開車約 1 小時 (首都高)', lat: 35.694, lng: 139.695, type: 'transport' },
       {
-        id: '3-4',
+        id: '3-8',
         day: 3,
         time: '16:30',
         location: '西鐵 Inn 新宿',
-        activity: '還車/Check-in',
-        notes: '入住西鐵 Inn',
+        activity: 'Check-in & 停車',
+        notes: '1. 下行李 2. 停好車 3. 休息',
         lat: 35.694,
         lng: 139.695,
         type: 'stay',
@@ -131,11 +135,11 @@ export const ITINERARY_DATA: DayPlan[] = [
           period: '2026/01/22 - 2026/01/24'
         }
       },
-      { id: '3-5', day: 3, time: '17:00', location: '東京都廳 南展望室', activity: '賞夜景', notes: '免費俯瞰東京', lat: 35.689, lng: 139.691, type: 'sightseeing' },
-      { id: '3-6', day: 3, time: '18:30', location: '牛舌の檸檬', activity: '晚餐', notes: '極厚切牛舌', lat: 35.693, lng: 139.698, type: 'food' },
-      { id: '3-7', day: 3, time: '20:00', location: '回憶橫丁', activity: '夜生活', notes: '昭和風情街', lat: 35.693, lng: 139.699, type: 'sightseeing' },
-      { id: '3-8', day: 3, time: '20:30', location: '歌舞伎町', activity: '夜生活', notes: '哥吉拉頭地標', lat: 35.694, lng: 139.702, type: 'sightseeing' },
-      { id: '3-9', day: 3, time: '21:30', location: '西鐵 Inn 新宿', activity: '住宿', notes: '返回飯店休息', lat: 35.694, lng: 139.695, type: 'stay' }
+      { id: '3-9', day: 3, time: '17:30', location: '東京都廳 南展望室', activity: '賞夜景', notes: '免費夜景 (走路 10 分鐘)', lat: 35.689, lng: 139.691, type: 'sightseeing' },
+      { id: '3-10', day: 3, time: '18:30', location: '牛舌の檸檬', activity: '晚餐', notes: '記得預約！極厚切牛舌', lat: 35.693, lng: 139.698, type: 'food' },
+      { id: '3-11', day: 3, time: '20:00', location: '回憶橫丁', activity: '夜生活', notes: '昭和風情紅燈籠窄巷', lat: 35.693, lng: 139.699, type: 'sightseeing' },
+      { id: '3-12', day: 3, time: '20:30', location: '歌舞伎町', activity: '夜生活', notes: '哥吉拉飯店、唐吉訶德', lat: 35.694, lng: 139.702, type: 'sightseeing' },
+      { id: '3-13', day: 3, time: '21:30', location: '西鐵 Inn 新宿', activity: '休息', notes: '步行回飯店', lat: 35.694, lng: 139.695, type: 'stay' }
     ]
   },
   {
