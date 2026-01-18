@@ -16,17 +16,23 @@ import {
   Camera,
   ShoppingBag,
   ChevronRight,
+  ChevronDown,
   Info,
   Sun,
   CloudSnow,
   Thermometer,
   Wind,
   ExternalLink,
-  Ticket
+  Ticket,
+  StickyNote,
+  Edit3,
+  Save,
+  XCircle
 } from 'lucide-react';
 import { ITINERARY_DATA } from './constants';
 import { fetchWeatherData } from './weatherService';
 import { DayPlan, TripEvent, WeatherData } from './types';
+import { saveNote, loadAllNotes } from './supabaseClient';
 
 // Initial empty state or loading state could be handled, but for now we start empty
 
@@ -91,8 +97,48 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'map' | 'itinerary' | 'export' | 'booking' | 'flight'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWeather, setShowWeather] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [selectedDay, setSelectedDay] = useState<number | 'all'>(1);
   const [itineraryFilter, setItineraryFilter] = useState<number | 'all'>('all');
+  const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
+  const [editingEvent, setEditingEvent] = useState<string | null>(null);
+  const [eventDetails, setEventDetails] = useState<Record<string, string>>({});
+  const [savingNote, setSavingNote] = useState<string | null>(null);
+
+  // Load notes from Supabase on mount
+  useEffect(() => {
+    const loadNotes = async () => {
+      const notes = await loadAllNotes();
+      if (Object.keys(notes).length > 0) {
+        setEventDetails(notes);
+      } else {
+        // Fallback to localStorage if no notes in DB yet
+        const saved = localStorage.getItem('tripEventDetails');
+        if (saved) setEventDetails(JSON.parse(saved));
+      }
+    };
+    loadNotes();
+  }, []);
+
+  const saveEventDetails = async (eventId: string, details: string) => {
+    setSavingNote(eventId);
+    const updated = { ...eventDetails, [eventId]: details };
+    setEventDetails(updated);
+
+    // Save to Supabase
+    const success = await saveNote(eventId, details);
+    if (success) {
+      console.log('Note saved to Supabase');
+    } else {
+      // Fallback to localStorage if Supabase fails
+      localStorage.setItem('tripEventDetails', JSON.stringify(updated));
+      console.log('Saved to localStorage (Supabase unavailable)');
+    }
+    setSavingNote(null);
+  };
+
+  const getEventDetails = (event: TripEvent) => {
+    return eventDetails[event.id] !== undefined ? eventDetails[event.id] : (event.details || '');
+  };
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [mapConfig, setMapConfig] = useState<{ center: [number, number], zoom: number }>({
     center: [35.6895, 139.6917],
@@ -125,7 +171,10 @@ const App: React.FC = () => {
 
   // Update map bounds when day changes if not already focused on a specific point
   useEffect(() => {
-    if (currentDayData && currentDayData.events.length > 0) {
+    if (selectedDay === 'all') {
+      // Center on Tokyo area with lower zoom to see all locations
+      setMapConfig({ center: [35.5, 139.2], zoom: 8 });
+    } else if (currentDayData && currentDayData.events.length > 0) {
       const firstEvent = currentDayData.events[0];
       setMapConfig({ center: [firstEvent.lat, firstEvent.lng], zoom: 11 });
     }
@@ -188,7 +237,10 @@ const App: React.FC = () => {
                   <div className="p-3 font-bold text-white flex items-center justify-between" style={{ backgroundColor: day.color }}>
                     <div className="flex items-center gap-2">
                       <Calendar size={18} />
-                      <span>Day {day.day}</span>
+                      <div className="flex flex-col">
+                        <span>Day {day.day}</span>
+                        <span className="text-[10px] font-normal opacity-80">{day.date}</span>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 bg-black/20 px-2 py-0.5 rounded text-[11px] font-normal backdrop-blur-sm">
                       {weather?.icon}
@@ -198,52 +250,167 @@ const App: React.FC = () => {
                   <div className="divide-y divide-slate-100">
                     {day.events.map((event, index) => (
                       <div key={event.id} className="group relative">
-                        <button
-                          onClick={() => handleFocusLocation(event)}
-                          className="w-full p-3 text-left hover:bg-slate-50 flex gap-3 transition-colors items-start pr-10"
-                        >
-                          <div className="flex flex-col items-center min-w-[32px]">
-                            <span className="text-[11px] font-bold h-6 w-6 rounded-full flex items-center justify-center border text-white mb-1 shadow-sm" style={{ backgroundColor: day.color, borderColor: 'white' }}>
-                              {index + 1}
-                            </span>
-                            {event.travelTime && (
-                              <div className="text-[9px] text-slate-400 font-medium mb-0.5 flex items-center justify-center gap-0.5 whitespace-nowrap">
-                                <Car size={10} />
-                                {event.travelTime}
-                              </div>
-                            )}
-                            <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">{event.time}</span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-semibold flex items-center justify-between gap-1">
-                              <span className="truncate">{event.location}</span>
-                              <span className="text-slate-300 group-hover:text-slate-600 shrink-0">
-                                {getEventIcon(event.type)}
+                        <div className="flex items-start">
+                          <button
+                            onClick={() => handleFocusLocation(event)}
+                            className="flex-1 p-3 text-left hover:bg-slate-50 flex gap-3 transition-colors items-start pr-2"
+                          >
+                            <div className="flex flex-col items-center min-w-[32px]">
+                              <span className="text-[11px] font-bold h-6 w-6 rounded-full flex items-center justify-center border text-white mb-1 shadow-sm" style={{ backgroundColor: day.color, borderColor: 'white' }}>
+                                {index + 1}
                               </span>
+                              {event.travelTime && (
+                                <div className="text-[9px] text-slate-400 font-medium mb-0.5 flex items-center justify-center gap-0.5 whitespace-nowrap">
+                                  <Car size={10} />
+                                  {event.travelTime}
+                                </div>
+                              )}
+                              <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">{event.time}</span>
                             </div>
-                            <div className="text-xs text-slate-500 truncate">{event.activity}</div>
-                            {event.importantNotes && (
-                              <div className="text-[10px] text-red-500 font-bold mt-0.5">
-                                {event.importantNotes}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-semibold flex items-center justify-between gap-1">
+                                <span className="truncate">{event.location}</span>
+                                <span className="text-slate-300 group-hover:text-slate-600 shrink-0">
+                                  {getEventIcon(event.type)}
+                                </span>
                               </div>
-                            )}
-                            {event.booking && (
-                              <div className="flex items-center gap-1 mt-1 text-[10px] text-amber-600 font-medium bg-amber-50 px-1.5 py-0.5 rounded w-fit">
-                                <Ticket size={10} />
-                                <span>已預訂</span>
+                              <div className="text-xs text-slate-500 truncate">{event.activity}</div>
+                              {event.importantNotes && (
+                                <div className="text-[10px] text-red-500 font-bold mt-0.5">
+                                  {event.importantNotes}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-1 mt-1 flex-wrap">
+                                {event.booking && (
+                                  <div className="flex items-center gap-1 text-[10px] text-amber-600 font-medium bg-amber-50 px-1.5 py-0.5 rounded">
+                                    <Ticket size={10} />
+                                    <span>已預訂</span>
+                                  </div>
+                                )}
+                                {(event.details || eventDetails[event.id]) && (
+                                  <div className="flex items-center gap-1 text-[10px] text-blue-600 font-medium bg-blue-50 px-1.5 py-0.5 rounded">
+                                    <StickyNote size={10} />
+                                    <span>有筆記</span>
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
+                          </button>
+                          <div className="flex flex-col items-center gap-1 p-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedEvent(expandedEvent === event.id ? null : event.id);
+                              }}
+                              className={`p-1.5 rounded-lg transition-colors ${expandedEvent === event.id ? 'bg-blue-100 text-blue-600' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}
+                              title="顯示詳細資訊"
+                            >
+                              {expandedEvent === event.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                            </button>
+                            <a
+                              href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
+                              title="在 Google 地圖中開啟"
+                            >
+                              <ExternalLink size={14} />
+                            </a>
                           </div>
-                        </button>
-                        <a
-                          href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-blue-600 transition-colors bg-white/50 rounded-lg hover:bg-blue-50"
-                          title="在 Google 地圖中開啟"
-                        >
-                          <ExternalLink size={14} />
-                        </a>
+                        </div>
+                        {/* Expandable Details Section */}
+                        {expandedEvent === event.id && (
+                          <div className="px-3 pb-3 pt-0 ml-[44px] mr-2 animate-in slide-in-from-top-2 duration-200">
+                            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                                  <StickyNote size={12} />
+                                  <span>筆記 / Notes</span>
+                                </div>
+                                {editingEvent === event.id ? (
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingEvent(null);
+                                      }}
+                                      className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors"
+                                      title="取消"
+                                    >
+                                      <XCircle size={14} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingEvent(event.id);
+                                    }}
+                                    className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors"
+                                    title="編輯筆記"
+                                  >
+                                    <Edit3 size={14} />
+                                  </button>
+                                )}
+                              </div>
+                              {event.notes && (
+                                <div className="text-xs text-slate-600 mb-2">
+                                  <span className="font-medium text-slate-500">備註：</span>{event.notes}
+                                </div>
+                              )}
+                              {editingEvent === event.id ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    className="w-full text-xs text-slate-700 bg-white p-2 rounded border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                    rows={5}
+                                    placeholder="輸入詳細筆記..."
+                                    defaultValue={getEventDetails(event)}
+                                    id={`details-${event.id}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  <button
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      const textarea = document.getElementById(`details-${event.id}`) as HTMLTextAreaElement;
+                                      await saveEventDetails(event.id, textarea.value);
+                                      setEditingEvent(null);
+                                    }}
+                                    disabled={savingNote === event.id}
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-xs font-bold rounded-lg transition-colors"
+                                  >
+                                    {savingNote === event.id ? (
+                                      <>
+                                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        儲存中...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Save size={12} />
+                                        儲存
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+                              ) : (
+                                getEventDetails(event) ? (
+                                  <div className="text-xs text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-slate-200">
+                                    {getEventDetails(event)}
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="text-xs text-slate-400 italic bg-white p-2 rounded border border-dashed border-slate-200 cursor-pointer hover:border-blue-300 hover:text-blue-500 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingEvent(event.id);
+                                    }}
+                                  >
+                                    點擊此處新增筆記...
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -294,14 +461,22 @@ const App: React.FC = () => {
             <>
               {/* Day Selector Bar inside Map Area */}
               <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[500] bg-white/90 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-white/50 flex gap-1">
+                <button
+                  onClick={() => setSelectedDay('all')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center ${selectedDay === 'all' ? 'text-white shadow-lg scale-105 bg-slate-700' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                >
+                  <span>全部</span>
+                  <span className={`text-[9px] font-normal ${selectedDay === 'all' ? 'opacity-80' : 'opacity-60'}`}>All</span>
+                </button>
                 {ITINERARY_DATA.map(day => (
                   <button
                     key={`selector-${day.day}`}
                     onClick={() => setSelectedDay(day.day)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedDay === day.day ? 'text-white shadow-lg scale-105' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center ${selectedDay === day.day ? 'text-white shadow-lg scale-105' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
                     style={selectedDay === day.day ? { backgroundColor: day.color } : {}}
                   >
-                    Day {day.day}
+                    <span>Day {day.day}</span>
+                    <span className={`text-[9px] font-normal ${selectedDay === day.day ? 'opacity-80' : 'opacity-60'}`}>{day.date.split(' ')[0].replace('2026/', '')}</span>
                   </button>
                 ))}
               </div>
@@ -331,7 +506,73 @@ const App: React.FC = () => {
                   }
                 `}</style>
 
-                {currentDayData && (
+                {selectedDay === 'all' ? (
+                  ITINERARY_DATA.map(day => (
+                    <React.Fragment key={`day-${day.day}`}>
+                      {day.events.map((event, eventIdx) => (
+                        <Marker key={event.id} position={[event.lat, event.lng]} icon={createCustomIcon(day.color, eventIdx + 1)}>
+                          <Popup>
+                            <div className="p-4 min-w-[240px]">
+                              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+                                <span className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-black text-white shadow-sm" style={{ backgroundColor: day.color }}>{eventIdx + 1}</span>
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-0.5">Day {day.day} · {day.date}</span>
+                                  <span className="text-sm font-mono font-bold text-slate-700 leading-none">{event.time}</span>
+                                </div>
+                              </div>
+                              <h3 className="font-bold text-base leading-tight text-slate-800 mb-1">{event.location}</h3>
+                              <div className="flex items-center gap-1.5 text-slate-500 mb-4">
+                                {getEventIcon(event.type)}
+                                <span className="text-xs font-medium">{event.activity}</span>
+                              </div>
+                              {event.booking && (
+                                <div className="mb-4 bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                  <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs mb-2">
+                                    <Ticket size={14} />
+                                    <span>預訂資訊</span>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] text-slate-600">
+                                    <div className="text-slate-400">預約編號</div>
+                                    <div className="font-mono font-bold">{event.booking.number}</div>
+                                    <div className="text-slate-400">金額</div>
+                                    <div className="font-bold">{event.booking.price}</div>
+                                  </div>
+                                </div>
+                              )}
+                              {(event.notes || getEventDetails(event)) && (
+                                <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
+                                  <div className="flex items-center gap-1.5 text-blue-700 font-bold text-xs mb-2">
+                                    <StickyNote size={14} />
+                                    <span>筆記</span>
+                                  </div>
+                                  {event.notes && (
+                                    <div className="text-[11px] text-slate-600 mb-1">{event.notes}</div>
+                                  )}
+                                  {getEventDetails(event) && (
+                                    <div className="text-[11px] text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-blue-100 mt-2">{getEventDetails(event)}</div>
+                                  )}
+                                </div>
+                              )}
+                              <a
+                                href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:shadow-xl no-underline active:scale-95"
+                              >
+                                <MapIcon size={16} />
+                                Google 地圖開啟
+                              </a>
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
+                      <Polyline
+                        positions={day.events.map(e => [e.lat, e.lng])}
+                        pathOptions={{ color: day.color, weight: 4, opacity: 0.7, dashArray: '10, 10' }}
+                      />
+                    </React.Fragment>
+                  ))
+                ) : currentDayData && (
                   <React.Fragment>
                     {currentDayData.events.map((event, eventIdx) => (
                       <Marker key={event.id} position={[event.lat, event.lng]} icon={createCustomIcon(currentDayData.color, eventIdx + 1)}>
@@ -361,6 +602,20 @@ const App: React.FC = () => {
                                   <div className="text-slate-400">金額</div>
                                   <div className="font-bold">{event.booking.price}</div>
                                 </div>
+                              </div>
+                            )}
+                            {(event.notes || getEventDetails(event)) && (
+                              <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
+                                <div className="flex items-center gap-1.5 text-blue-700 font-bold text-xs mb-2">
+                                  <StickyNote size={14} />
+                                  <span>筆記</span>
+                                </div>
+                                {event.notes && (
+                                  <div className="text-[11px] text-slate-600 mb-1">{event.notes}</div>
+                                )}
+                                {getEventDetails(event) && (
+                                  <div className="text-[11px] text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-blue-100 mt-2">{getEventDetails(event)}</div>
+                                )}
                               </div>
                             )}
                             <a
@@ -442,7 +697,7 @@ const App: React.FC = () => {
                       className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${itineraryFilter === day.day ? 'text-white shadow-lg' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                       style={itineraryFilter === day.day ? { backgroundColor: day.color } : {}}
                     >
-                      Day {day.day}
+                      Day {day.day} ({day.date.split(' ')[0].replace('2026/', '')})
                     </button>
                   ))}
                 </div>

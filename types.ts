@@ -6,6 +6,7 @@ export interface TripEvent {
   location: string;
   activity: string;
   notes: string;
+  details?: string;  // Extended notes/details for the location
   importantNotes?: string;
   travelTime?: string;
   lat: number;
