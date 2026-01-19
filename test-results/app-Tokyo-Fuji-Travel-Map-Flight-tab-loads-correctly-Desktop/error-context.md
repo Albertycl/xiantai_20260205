@@ -1,0 +1,902 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]:
+        - heading "2026 東京富士山" [level=1] [ref=e8]
+        - paragraph [ref=e9]: 智能行程 & 氣候分析
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e13]:
+            - img [ref=e14]
+            - generic [ref=e16]:
+              - generic [ref=e17]: Day 1
+              - generic [ref=e18]: 2026/01/20 (二)
+          - generic [ref=e20]:
+            - generic [ref=e22]:
+              - button "1 12:00 成田機場 (NRT) 抵達機場" [ref=e23] [cursor=pointer]:
+                - generic [ref=e24]:
+                  - generic [ref=e25]: "1"
+                  - generic [ref=e26]: 12:00
+                - generic [ref=e27]:
+                  - generic [ref=e28]:
+                    - generic [ref=e29]: 成田機場 (NRT)
+                    - img [ref=e31]
+                  - generic [ref=e33]: 抵達機場
+              - generic [ref=e34]:
+                - button "顯示詳細資訊" [ref=e35] [cursor=pointer]:
+                  - img [ref=e36]
+                - link "在 Google 地圖中開啟" [ref=e38] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%88%90%E7%94%B0%E6%A9%9F%E5%A0%B4%20(NRT)%2035.772%2C140.392
+                  - img [ref=e39]
+            - generic [ref=e44]:
+              - button "2 13:00 ORIX 租車成田機場店 取車手續" [ref=e45] [cursor=pointer]:
+                - generic [ref=e46]:
+                  - generic [ref=e47]: "2"
+                  - generic [ref=e48]: 13:00
+                - generic [ref=e49]:
+                  - generic [ref=e50]:
+                    - generic [ref=e51]: ORIX 租車成田機場店
+                    - img [ref=e53]
+                  - generic [ref=e57]: 取車手續
+              - generic [ref=e58]:
+                - button "顯示詳細資訊" [ref=e59] [cursor=pointer]:
+                  - img [ref=e60]
+                - link "在 Google 地圖中開啟" [ref=e62] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=ORIX%20%E7%A7%9F%E8%BB%8A%E6%88%90%E7%94%B0%E6%A9%9F%E5%A0%B4%E5%BA%97%2035.765%2C140.385
+                  - img [ref=e63]
+            - generic [ref=e68]:
+              - button "3 15:30 讀賣樂園 寶石燈飾秀" [ref=e69] [cursor=pointer]:
+                - generic [ref=e70]:
+                  - generic [ref=e71]: "3"
+                  - generic [ref=e72]: 15:30
+                - generic [ref=e73]:
+                  - generic [ref=e74]:
+                    - generic [ref=e75]: 讀賣樂園
+                    - img [ref=e77]
+                  - generic [ref=e80]: 寶石燈飾秀
+              - generic [ref=e81]:
+                - button "顯示詳細資訊" [ref=e82] [cursor=pointer]:
+                  - img [ref=e83]
+                - link "在 Google 地圖中開啟" [ref=e85] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%AE%80%E8%B3%A3%E6%A8%82%E5%9C%92%2035.625%2C139.517
+                  - img [ref=e86]
+            - generic [ref=e91]:
+              - button "4 20:00 梅丘壽司之美登利 晚餐 有筆記" [ref=e92] [cursor=pointer]:
+                - generic [ref=e93]:
+                  - generic [ref=e94]: "4"
+                  - generic [ref=e95]: 20:00
+                - generic [ref=e96]:
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: 梅丘壽司之美登利
+                    - img [ref=e100]
+                  - generic [ref=e103]: 晚餐
+                  - generic [ref=e105]:
+                    - img [ref=e106]
+                    - generic [ref=e109]: 有筆記
+              - generic [ref=e110]:
+                - button "顯示詳細資訊" [ref=e111] [cursor=pointer]:
+                  - img [ref=e112]
+                - link "在 Google 地圖中開啟" [ref=e114] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%A2%85%E4%B8%98%E5%A3%BD%E5%8F%B8%E4%B9%8B%E7%BE%8E%E7%99%BB%E5%88%A9%2035.602%2C139.508
+                  - img [ref=e115]
+            - generic [ref=e120]:
+              - button "5 21:30 Hotel Molino Shin-Yuri 住宿 Check-in 已預訂" [ref=e121] [cursor=pointer]:
+                - generic [ref=e122]:
+                  - generic [ref=e123]: "5"
+                  - generic [ref=e124]: 21:30
+                - generic [ref=e125]:
+                  - generic [ref=e126]:
+                    - generic [ref=e127]: Hotel Molino Shin-Yuri
+                    - img [ref=e129]
+                  - generic [ref=e131]: 住宿 Check-in
+                  - generic [ref=e133]:
+                    - img [ref=e134]
+                    - generic [ref=e136]: 已預訂
+              - generic [ref=e137]:
+                - button "顯示詳細資訊" [ref=e138] [cursor=pointer]:
+                  - img [ref=e139]
+                - link "在 Google 地圖中開啟" [ref=e141] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Hotel%20Molino%20Shin-Yuri%2035.602%2C139.508
+                  - img [ref=e142]
+        - generic [ref=e146]:
+          - generic [ref=e148]:
+            - img [ref=e149]
+            - generic [ref=e151]:
+              - generic [ref=e152]: Day 2
+              - generic [ref=e153]: 2026/01/21 (三)
+          - generic [ref=e155]:
+            - generic [ref=e157]:
+              - button "1 08:00 Hotel Molino Shin-Yuri 飯店出發" [ref=e158] [cursor=pointer]:
+                - generic [ref=e159]:
+                  - generic [ref=e160]: "1"
+                  - generic [ref=e161]: 08:00
+                - generic [ref=e162]:
+                  - generic [ref=e163]:
+                    - generic [ref=e164]: Hotel Molino Shin-Yuri
+                    - img [ref=e166]
+                  - generic [ref=e168]: 飯店出發
+              - generic [ref=e169]:
+                - button "顯示詳細資訊" [ref=e170] [cursor=pointer]:
+                  - img [ref=e171]
+                - link "在 Google 地圖中開啟" [ref=e173] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Hotel%20Molino%20Shin-Yuri%2035.602%2C139.508
+                  - img [ref=e174]
+            - generic [ref=e179]:
+              - button "2 約 1 小時 30 分 10:00 富士野生動物園 叢林巴士、自駕Safari" [ref=e180] [cursor=pointer]:
+                - generic [ref=e181]:
+                  - generic [ref=e182]: "2"
+                  - generic [ref=e183]:
+                    - img [ref=e184]
+                    - text: 約 1 小時 30 分
+                  - generic [ref=e188]: 10:00
+                - generic [ref=e189]:
+                  - generic [ref=e190]:
+                    - generic [ref=e191]: 富士野生動物園
+                    - img [ref=e193]
+                  - generic [ref=e196]: 叢林巴士、自駕Safari
+              - generic [ref=e197]:
+                - button "顯示詳細資訊" [ref=e198] [cursor=pointer]:
+                  - img [ref=e199]
+                - link "在 Google 地圖中開啟" [ref=e201] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E5%A3%AB%E9%87%8E%E7%94%9F%E5%8B%95%E7%89%A9%E5%9C%92%2035.247%2C138.838
+                  - img [ref=e202]
+            - generic [ref=e207]:
+              - button "3 11:15 富士野生動物園 Super Jungle Bus 有筆記" [ref=e208] [cursor=pointer]:
+                - generic [ref=e209]:
+                  - generic [ref=e210]: "3"
+                  - generic [ref=e211]: 11:15
+                - generic [ref=e212]:
+                  - generic [ref=e213]:
+                    - generic [ref=e214]: 富士野生動物園
+                    - img [ref=e216]
+                  - generic [ref=e219]: Super Jungle Bus
+                  - generic [ref=e221]:
+                    - img [ref=e222]
+                    - generic [ref=e225]: 有筆記
+              - generic [ref=e226]:
+                - button "顯示詳細資訊" [ref=e227] [cursor=pointer]:
+                  - img [ref=e228]
+                - link "在 Google 地圖中開啟" [ref=e230] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E5%A3%AB%E9%87%8E%E7%94%9F%E5%8B%95%E7%89%A9%E5%9C%92%2035.247%2C138.838
+                  - img [ref=e231]
+            - generic [ref=e236]:
+              - button "4 約 40 分 16:00 Sawayaka 漢堡 炭焼きレストランさわやか 御殿場インター店 抽號碼牌" [ref=e237] [cursor=pointer]:
+                - generic [ref=e238]:
+                  - generic [ref=e239]: "4"
+                  - generic [ref=e240]:
+                    - img [ref=e241]
+                    - text: 約 40 分
+                  - generic [ref=e245]: 16:00
+                - generic [ref=e246]:
+                  - generic [ref=e247]:
+                    - generic [ref=e248]: Sawayaka 漢堡 炭焼きレストランさわやか 御殿場インター店
+                    - img [ref=e250]
+                  - generic [ref=e253]: 抽號碼牌
+              - generic [ref=e254]:
+                - button "顯示詳細資訊" [ref=e255] [cursor=pointer]:
+                  - img [ref=e256]
+                - link "在 Google 地圖中開啟" [ref=e258] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Sawayaka%20%E6%BC%A2%E5%A0%A1%20%E7%82%AD%E7%84%BC%E3%81%8D%E3%83%AC%E3%82%B9%E3%83%88%E3%83%A9%E3%83%B3%E3%81%95%E3%82%8F%E3%82%84%E3%81%8B%20%E5%BE%A1%E6%AE%BF%E5%A0%B4%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E5%BA%97%2035.294%2C138.945
+                  - img [ref=e259]
+            - generic [ref=e264]:
+              - button "5 約 10 分 17:00 御殿場 Premium Outlets 逛街購物 持長榮登機證換旅行袋" [ref=e265] [cursor=pointer]:
+                - generic [ref=e266]:
+                  - generic [ref=e267]: "5"
+                  - generic [ref=e268]:
+                    - img [ref=e269]
+                    - text: 約 10 分
+                  - generic [ref=e273]: 17:00
+                - generic [ref=e274]:
+                  - generic [ref=e275]:
+                    - generic [ref=e276]: 御殿場 Premium Outlets
+                    - img [ref=e278]
+                  - generic [ref=e281]: 逛街購物
+                  - generic [ref=e282]: 持長榮登機證換旅行袋
+              - generic [ref=e283]:
+                - button "顯示詳細資訊" [ref=e284] [cursor=pointer]:
+                  - img [ref=e285]
+                - link "在 Google 地圖中開啟" [ref=e287] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%BE%A1%E6%AE%BF%E5%A0%B4%20Premium%20Outlets%2035.308%2C138.966
+                  - img [ref=e288]
+            - generic [ref=e293]:
+              - button "6 21:00 木之花之湯 溫泉享受" [ref=e294] [cursor=pointer]:
+                - generic [ref=e295]:
+                  - generic [ref=e296]: "6"
+                  - generic [ref=e297]: 21:00
+                - generic [ref=e298]:
+                  - generic [ref=e299]:
+                    - generic [ref=e300]: 木之花之湯
+                    - img [ref=e302]
+                  - generic [ref=e305]: 溫泉享受
+              - generic [ref=e306]:
+                - button "顯示詳細資訊" [ref=e307] [cursor=pointer]:
+                  - img [ref=e308]
+                - link "在 Google 地圖中開啟" [ref=e310] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%9C%A8%E4%B9%8B%E8%8A%B1%E4%B9%8B%E6%B9%AF%2035.305%2C138.968
+                  - img [ref=e311]
+            - generic [ref=e316]:
+              - button "7 22:00 HOTEL CLAD 住宿 已預訂" [ref=e317] [cursor=pointer]:
+                - generic [ref=e318]:
+                  - generic [ref=e319]: "7"
+                  - generic [ref=e320]: 22:00
+                - generic [ref=e321]:
+                  - generic [ref=e322]:
+                    - generic [ref=e323]: HOTEL CLAD
+                    - img [ref=e325]
+                  - generic [ref=e327]: 住宿
+                  - generic [ref=e329]:
+                    - img [ref=e330]
+                    - generic [ref=e332]: 已預訂
+              - generic [ref=e333]:
+                - button "顯示詳細資訊" [ref=e334] [cursor=pointer]:
+                  - img [ref=e335]
+                - link "在 Google 地圖中開啟" [ref=e337] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=HOTEL%20CLAD%2035.308%2C138.966
+                  - img [ref=e338]
+        - generic [ref=e342]:
+          - generic [ref=e344]:
+            - img [ref=e345]
+            - generic [ref=e347]:
+              - generic [ref=e348]: Day 3
+              - generic [ref=e349]: 2026/01/22 (四)
+          - generic [ref=e351]:
+            - generic [ref=e353]:
+              - button "1 約 1.5 小時 (東名高速) 08:30 HOTEL CLAD 飯店出發" [ref=e354] [cursor=pointer]:
+                - generic [ref=e355]:
+                  - generic [ref=e356]: "1"
+                  - generic [ref=e357]:
+                    - img [ref=e358]
+                    - text: 約 1.5 小時 (東名高速)
+                  - generic [ref=e362]: 08:30
+                - generic [ref=e363]:
+                  - generic [ref=e364]:
+                    - generic [ref=e365]: HOTEL CLAD
+                    - img [ref=e367]
+                  - generic [ref=e369]: 飯店出發
+              - generic [ref=e370]:
+                - button "顯示詳細資訊" [ref=e371] [cursor=pointer]:
+                  - img [ref=e372]
+                - link "在 Google 地圖中開啟" [ref=e374] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=HOTEL%20CLAD%2035.308%2C138.966
+                  - img [ref=e375]
+            - generic [ref=e380]:
+              - button "2 停車：紅磚倉庫停車場 10:00 橫濱紅磚倉庫 逛街/拍照" [ref=e381] [cursor=pointer]:
+                - generic [ref=e382]:
+                  - generic [ref=e383]: "2"
+                  - generic [ref=e384]:
+                    - img [ref=e385]
+                    - text: 停車：紅磚倉庫停車場
+                  - generic [ref=e389]: 10:00
+                - generic [ref=e390]:
+                  - generic [ref=e391]:
+                    - generic [ref=e392]: 橫濱紅磚倉庫
+                    - img [ref=e394]
+                  - generic [ref=e397]: 逛街/拍照
+              - generic [ref=e398]:
+                - button "顯示詳細資訊" [ref=e399] [cursor=pointer]:
+                  - img [ref=e400]
+                - link "在 Google 地圖中開啟" [ref=e402] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%A9%AB%E6%BF%B1%E7%B4%85%E7%A3%9A%E5%80%89%E5%BA%AB%2035.459%2C139.642
+                  - img [ref=e403]
+            - generic [ref=e408]:
+              - button "3 約 10 分鐘 11:20 前往地標塔 關鍵移動" [ref=e409] [cursor=pointer]:
+                - generic [ref=e410]:
+                  - generic [ref=e411]: "3"
+                  - generic [ref=e412]:
+                    - img [ref=e413]
+                    - text: 約 10 分鐘
+                  - generic [ref=e417]: 11:20
+                - generic [ref=e418]:
+                  - generic [ref=e419]:
+                    - generic [ref=e420]: 前往地標塔
+                    - img [ref=e422]
+                  - generic [ref=e426]: 關鍵移動
+              - generic [ref=e427]:
+                - button "顯示詳細資訊" [ref=e428] [cursor=pointer]:
+                  - img [ref=e429]
+                - link "在 Google 地圖中開啟" [ref=e431] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%89%8D%E5%BE%80%E5%9C%B0%E6%A8%99%E5%A1%94%2035.455%2C139.631
+                  - img [ref=e432]
+            - generic [ref=e437]:
+              - button "4 11:45 Sky Duck 售票處 集合報到" [ref=e438] [cursor=pointer]:
+                - generic [ref=e439]:
+                  - generic [ref=e440]: "4"
+                  - generic [ref=e441]: 11:45
+                - generic [ref=e442]:
+                  - generic [ref=e443]:
+                    - generic [ref=e444]: Sky Duck 售票處
+                    - img [ref=e446]
+                  - generic [ref=e449]: 集合報到
+              - generic [ref=e450]:
+                - button "顯示詳細資訊" [ref=e451] [cursor=pointer]:
+                  - img [ref=e452]
+                - link "在 Google 地圖中開啟" [ref=e454] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Sky%20Duck%20%E5%94%AE%E7%A5%A8%E8%99%95%2035.454%2C139.632
+                  - img [ref=e455]
+            - generic [ref=e460]:
+              - button "5 12:00 Sky Duck 水陸巴士 【D801】みなとハイカラコース" [ref=e461] [cursor=pointer]:
+                - generic [ref=e462]:
+                  - generic [ref=e463]: "5"
+                  - generic [ref=e464]: 12:00
+                - generic [ref=e465]:
+                  - generic [ref=e466]:
+                    - generic [ref=e467]: Sky Duck 水陸巴士
+                    - img [ref=e469]
+                  - generic [ref=e472]: 【D801】みなとハイカラコース
+              - generic [ref=e473]:
+                - button "顯示詳細資訊" [ref=e474] [cursor=pointer]:
+                  - img [ref=e475]
+                - link "在 Google 地圖中開啟" [ref=e477] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Sky%20Duck%20%E6%B0%B4%E9%99%B8%E5%B7%B4%E5%A3%AB%2035.454%2C139.632
+                  - img [ref=e478]
+            - generic [ref=e483]:
+              - button "6 13:00 Landmark Plaza 午餐" [ref=e484] [cursor=pointer]:
+                - generic [ref=e485]:
+                  - generic [ref=e486]: "6"
+                  - generic [ref=e487]: 13:00
+                - generic [ref=e488]:
+                  - generic [ref=e489]:
+                    - generic [ref=e490]: Landmark Plaza
+                    - img [ref=e492]
+                  - generic [ref=e495]: 午餐
+              - generic [ref=e496]:
+                - button "顯示詳細資訊" [ref=e497] [cursor=pointer]:
+                  - img [ref=e498]
+                - link "在 Google 地圖中開啟" [ref=e500] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Landmark%20Plaza%2035.455%2C139.631
+                  - img [ref=e501]
+            - generic [ref=e506]:
+              - button "7 14:30 HARBS 下午茶 下午茶" [ref=e507] [cursor=pointer]:
+                - generic [ref=e508]:
+                  - generic [ref=e509]: "7"
+                  - generic [ref=e510]: 14:30
+                - generic [ref=e511]:
+                  - generic [ref=e512]:
+                    - generic [ref=e513]: HARBS 下午茶
+                    - img [ref=e515]
+                  - generic [ref=e518]: 下午茶
+              - generic [ref=e519]:
+                - button "顯示詳細資訊" [ref=e520] [cursor=pointer]:
+                  - img [ref=e521]
+                - link "在 Google 地圖中開啟" [ref=e523] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=HARBS%20%E4%B8%8B%E5%8D%88%E8%8C%B6%2035.455%2C139.631
+                  - img [ref=e524]
+            - generic [ref=e529]:
+              - button "8 15:30 前往東京新宿 移動" [ref=e530] [cursor=pointer]:
+                - generic [ref=e531]:
+                  - generic [ref=e532]: "8"
+                  - generic [ref=e533]: 15:30
+                - generic [ref=e534]:
+                  - generic [ref=e535]:
+                    - generic [ref=e536]: 前往東京新宿
+                    - img [ref=e538]
+                  - generic [ref=e542]: 移動
+              - generic [ref=e543]:
+                - button "顯示詳細資訊" [ref=e544] [cursor=pointer]:
+                  - img [ref=e545]
+                - link "在 Google 地圖中開啟" [ref=e547] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%89%8D%E5%BE%80%E6%9D%B1%E4%BA%AC%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e548]
+            - generic [ref=e553]:
+              - button "9 16:30 西鐵 Inn 新宿 Check-in & 停車 已預訂" [ref=e554] [cursor=pointer]:
+                - generic [ref=e555]:
+                  - generic [ref=e556]: "9"
+                  - generic [ref=e557]: 16:30
+                - generic [ref=e558]:
+                  - generic [ref=e559]:
+                    - generic [ref=e560]: 西鐵 Inn 新宿
+                    - img [ref=e562]
+                  - generic [ref=e564]: Check-in & 停車
+                  - generic [ref=e566]:
+                    - img [ref=e567]
+                    - generic [ref=e569]: 已預訂
+              - generic [ref=e570]:
+                - button "顯示詳細資訊" [ref=e571] [cursor=pointer]:
+                  - img [ref=e572]
+                - link "在 Google 地圖中開啟" [ref=e574] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E9%90%B5%20Inn%20%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e575]
+            - generic [ref=e580]:
+              - button "10 17:30 東京都廳 南展望室 賞夜景" [ref=e581] [cursor=pointer]:
+                - generic [ref=e582]:
+                  - generic [ref=e583]: "10"
+                  - generic [ref=e584]: 17:30
+                - generic [ref=e585]:
+                  - generic [ref=e586]:
+                    - generic [ref=e587]: 東京都廳 南展望室
+                    - img [ref=e589]
+                  - generic [ref=e592]: 賞夜景
+              - generic [ref=e593]:
+                - button "顯示詳細資訊" [ref=e594] [cursor=pointer]:
+                  - img [ref=e595]
+                - link "在 Google 地圖中開啟" [ref=e597] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%BB%B3%20%E5%8D%97%E5%B1%95%E6%9C%9B%E5%AE%A4%2035.689%2C139.691
+                  - img [ref=e598]
+            - generic [ref=e603]:
+              - button "11 18:30 牛舌の檸檬 晚餐" [ref=e604] [cursor=pointer]:
+                - generic [ref=e605]:
+                  - generic [ref=e606]: "11"
+                  - generic [ref=e607]: 18:30
+                - generic [ref=e608]:
+                  - generic [ref=e609]:
+                    - generic [ref=e610]: 牛舌の檸檬
+                    - img [ref=e612]
+                  - generic [ref=e615]: 晚餐
+              - generic [ref=e616]:
+                - button "顯示詳細資訊" [ref=e617] [cursor=pointer]:
+                  - img [ref=e618]
+                - link "在 Google 地圖中開啟" [ref=e620] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E7%89%9B%E8%88%8C%E3%81%AE%E6%AA%B8%E6%AA%AC%2035.693%2C139.698
+                  - img [ref=e621]
+            - generic [ref=e626]:
+              - button "12 20:00 回憶橫丁 夜生活" [ref=e627] [cursor=pointer]:
+                - generic [ref=e628]:
+                  - generic [ref=e629]: "12"
+                  - generic [ref=e630]: 20:00
+                - generic [ref=e631]:
+                  - generic [ref=e632]:
+                    - generic [ref=e633]: 回憶橫丁
+                    - img [ref=e635]
+                  - generic [ref=e638]: 夜生活
+              - generic [ref=e639]:
+                - button "顯示詳細資訊" [ref=e640] [cursor=pointer]:
+                  - img [ref=e641]
+                - link "在 Google 地圖中開啟" [ref=e643] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%9B%9E%E6%86%B6%E6%A9%AB%E4%B8%81%2035.693%2C139.699
+                  - img [ref=e644]
+            - generic [ref=e649]:
+              - button "13 20:30 歌舞伎町 夜生活" [ref=e650] [cursor=pointer]:
+                - generic [ref=e651]:
+                  - generic [ref=e652]: "13"
+                  - generic [ref=e653]: 20:30
+                - generic [ref=e654]:
+                  - generic [ref=e655]:
+                    - generic [ref=e656]: 歌舞伎町
+                    - img [ref=e658]
+                  - generic [ref=e661]: 夜生活
+              - generic [ref=e662]:
+                - button "顯示詳細資訊" [ref=e663] [cursor=pointer]:
+                  - img [ref=e664]
+                - link "在 Google 地圖中開啟" [ref=e666] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%AD%8C%E8%88%9E%E4%BC%8E%E7%94%BA%2035.694%2C139.702
+                  - img [ref=e667]
+            - generic [ref=e672]:
+              - button "14 21:30 西鐵 Inn 新宿 休息" [ref=e673] [cursor=pointer]:
+                - generic [ref=e674]:
+                  - generic [ref=e675]: "14"
+                  - generic [ref=e676]: 21:30
+                - generic [ref=e677]:
+                  - generic [ref=e678]:
+                    - generic [ref=e679]: 西鐵 Inn 新宿
+                    - img [ref=e681]
+                  - generic [ref=e683]: 休息
+              - generic [ref=e684]:
+                - button "顯示詳細資訊" [ref=e685] [cursor=pointer]:
+                  - img [ref=e686]
+                - link "在 Google 地圖中開啟" [ref=e688] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E9%90%B5%20Inn%20%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e689]
+        - generic [ref=e693]:
+          - generic [ref=e695]:
+            - img [ref=e696]
+            - generic [ref=e698]:
+              - generic [ref=e699]: Day 4
+              - generic [ref=e700]: 2026/01/23 (五)
+          - generic [ref=e702]:
+            - generic [ref=e704]:
+              - button "1 07:30 西鐵 Inn 新宿 飯店出發" [ref=e705] [cursor=pointer]:
+                - generic [ref=e706]:
+                  - generic [ref=e707]: "1"
+                  - generic [ref=e708]: 07:30
+                - generic [ref=e709]:
+                  - generic [ref=e710]:
+                    - generic [ref=e711]: 西鐵 Inn 新宿
+                    - img [ref=e713]
+                  - generic [ref=e715]: 飯店出發
+              - generic [ref=e716]:
+                - button "顯示詳細資訊" [ref=e717] [cursor=pointer]:
+                  - img [ref=e718]
+                - link "在 Google 地圖中開啟" [ref=e720] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E9%90%B5%20Inn%20%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e721]
+            - generic [ref=e726]:
+              - button "2 09:30 伊勢丹百貨 新宿店 B1 排隊買費南雪 有筆記" [ref=e727] [cursor=pointer]:
+                - generic [ref=e728]:
+                  - generic [ref=e729]: "2"
+                  - generic [ref=e730]: 09:30
+                - generic [ref=e731]:
+                  - generic [ref=e732]:
+                    - generic [ref=e733]: 伊勢丹百貨 新宿店 B1
+                    - img [ref=e735]
+                  - generic [ref=e738]: 排隊買費南雪
+                  - generic [ref=e740]:
+                    - img [ref=e741]
+                    - generic [ref=e744]: 有筆記
+              - generic [ref=e745]:
+                - button "顯示詳細資訊" [ref=e746] [cursor=pointer]:
+                  - img [ref=e747]
+                - link "在 Google 地圖中開啟" [ref=e749] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E4%BC%8A%E5%8B%A2%E4%B8%B9%E7%99%BE%E8%B2%A8%20%E6%96%B0%E5%AE%BF%E5%BA%97%20B1%2035.691%2C139.704
+                  - img [ref=e750]
+            - generic [ref=e755]:
+              - button "3 10:30 築地場外市場 Brunch" [ref=e756] [cursor=pointer]:
+                - generic [ref=e757]:
+                  - generic [ref=e758]: "3"
+                  - generic [ref=e759]: 10:30
+                - generic [ref=e760]:
+                  - generic [ref=e761]:
+                    - generic [ref=e762]: 築地場外市場
+                    - img [ref=e764]
+                  - generic [ref=e767]: Brunch
+              - generic [ref=e768]:
+                - button "顯示詳細資訊" [ref=e769] [cursor=pointer]:
+                  - img [ref=e770]
+                - link "在 Google 地圖中開啟" [ref=e772] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E7%AF%89%E5%9C%B0%E5%A0%B4%E5%A4%96%E5%B8%82%E5%A0%B4%2035.665%2C139.771
+                  - img [ref=e773]
+            - generic [ref=e778]:
+              - button "4 11:30 小網神社 參拜" [ref=e779] [cursor=pointer]:
+                - generic [ref=e780]:
+                  - generic [ref=e781]: "4"
+                  - generic [ref=e782]: 11:30
+                - generic [ref=e783]:
+                  - generic [ref=e784]:
+                    - generic [ref=e785]: 小網神社
+                    - img [ref=e787]
+                  - generic [ref=e790]: 參拜
+              - generic [ref=e791]:
+                - button "顯示詳細資訊" [ref=e792] [cursor=pointer]:
+                  - img [ref=e793]
+                - link "在 Google 地圖中開啟" [ref=e795] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%B0%8F%E7%B6%B2%E7%A5%9E%E7%A4%BE%2035.685%2C139.777
+                  - img [ref=e796]
+            - generic [ref=e801]:
+              - button "5 12:30 銀座 炸豬排 檍 午餐" [ref=e802] [cursor=pointer]:
+                - generic [ref=e803]:
+                  - generic [ref=e804]: "5"
+                  - generic [ref=e805]: 12:30
+                - generic [ref=e806]:
+                  - generic [ref=e807]:
+                    - generic [ref=e808]: 銀座 炸豬排 檍
+                    - img [ref=e810]
+                  - generic [ref=e813]: 午餐
+              - generic [ref=e814]:
+                - button "顯示詳細資訊" [ref=e815] [cursor=pointer]:
+                  - img [ref=e816]
+                - link "在 Google 地圖中開啟" [ref=e818] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E9%8A%80%E5%BA%A7%20%E7%82%B8%E8%B1%AC%E6%8E%92%20%E6%AA%8D%2035.669%2C139.761
+                  - img [ref=e819]
+            - generic [ref=e824]:
+              - button "6 14:00 皇居二重橋 散步" [ref=e825] [cursor=pointer]:
+                - generic [ref=e826]:
+                  - generic [ref=e827]: "6"
+                  - generic [ref=e828]: 14:00
+                - generic [ref=e829]:
+                  - generic [ref=e830]:
+                    - generic [ref=e831]: 皇居二重橋
+                    - img [ref=e833]
+                  - generic [ref=e836]: 散步
+              - generic [ref=e837]:
+                - button "顯示詳細資訊" [ref=e838] [cursor=pointer]:
+                  - img [ref=e839]
+                - link "在 Google 地圖中開啟" [ref=e841] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E7%9A%87%E5%B1%85%E4%BA%8C%E9%87%8D%E6%A9%8B%2035.679%2C139.758
+                  - img [ref=e842]
+            - generic [ref=e847]:
+              - button "7 15:30 宮下公園 散步/咖啡" [ref=e848] [cursor=pointer]:
+                - generic [ref=e849]:
+                  - generic [ref=e850]: "7"
+                  - generic [ref=e851]: 15:30
+                - generic [ref=e852]:
+                  - generic [ref=e853]:
+                    - generic [ref=e854]: 宮下公園
+                    - img [ref=e856]
+                  - generic [ref=e859]: 散步/咖啡
+              - generic [ref=e860]:
+                - button "顯示詳細資訊" [ref=e861] [cursor=pointer]:
+                  - img [ref=e862]
+                - link "在 Google 地圖中開啟" [ref=e864] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E5%AE%AE%E4%B8%8B%E5%85%AC%E5%9C%92%2035.662%2C139.702
+                  - img [ref=e865]
+            - generic [ref=e870]:
+              - button "8 16:30 SHIBUYA SKY 賞夕陽夜景" [ref=e871] [cursor=pointer]:
+                - generic [ref=e872]:
+                  - generic [ref=e873]: "8"
+                  - generic [ref=e874]: 16:30
+                - generic [ref=e875]:
+                  - generic [ref=e876]:
+                    - generic [ref=e877]: SHIBUYA SKY
+                    - img [ref=e879]
+                  - generic [ref=e882]: 賞夕陽夜景
+              - generic [ref=e883]:
+                - button "顯示詳細資訊" [ref=e884] [cursor=pointer]:
+                  - img [ref=e885]
+                - link "在 Google 地圖中開啟" [ref=e887] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=SHIBUYA%20SKY%2035.658%2C139.702
+                  - img [ref=e888]
+            - generic [ref=e893]:
+              - button "9 18:00 AND THE FRIET 點心" [ref=e894] [cursor=pointer]:
+                - generic [ref=e895]:
+                  - generic [ref=e896]: "9"
+                  - generic [ref=e897]: 18:00
+                - generic [ref=e898]:
+                  - generic [ref=e899]:
+                    - generic [ref=e900]: AND THE FRIET
+                    - img [ref=e902]
+                  - generic [ref=e905]: 點心
+              - generic [ref=e906]:
+                - button "顯示詳細資訊" [ref=e907] [cursor=pointer]:
+                  - img [ref=e908]
+                - link "在 Google 地圖中開啟" [ref=e910] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=AND%20THE%20FRIET%2035.658%2C139.703
+                  - img [ref=e911]
+            - generic [ref=e916]:
+              - button "10 18:30 Peter Luger Steakhouse 頂級晚餐" [ref=e917] [cursor=pointer]:
+                - generic [ref=e918]:
+                  - generic [ref=e919]: "10"
+                  - generic [ref=e920]: 18:30
+                - generic [ref=e921]:
+                  - generic [ref=e922]:
+                    - generic [ref=e923]: Peter Luger Steakhouse
+                    - img [ref=e925]
+                  - generic [ref=e928]: 頂級晚餐
+              - generic [ref=e929]:
+                - button "顯示詳細資訊" [ref=e930] [cursor=pointer]:
+                  - img [ref=e931]
+                - link "在 Google 地圖中開啟" [ref=e933] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=Peter%20Luger%20Steakhouse%2035.643%2C139.715
+                  - img [ref=e934]
+            - generic [ref=e939]:
+              - button "11 21:00 西鐵 Inn 新宿 住宿" [ref=e940] [cursor=pointer]:
+                - generic [ref=e941]:
+                  - generic [ref=e942]: "11"
+                  - generic [ref=e943]: 21:00
+                - generic [ref=e944]:
+                  - generic [ref=e945]:
+                    - generic [ref=e946]: 西鐵 Inn 新宿
+                    - img [ref=e948]
+                  - generic [ref=e950]: 住宿
+              - generic [ref=e951]:
+                - button "顯示詳細資訊" [ref=e952] [cursor=pointer]:
+                  - img [ref=e953]
+                - link "在 Google 地圖中開啟" [ref=e955] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E9%90%B5%20Inn%20%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e956]
+        - generic [ref=e960]:
+          - generic [ref=e962]:
+            - img [ref=e963]
+            - generic [ref=e965]:
+              - generic [ref=e966]: Day 5
+              - generic [ref=e967]: 2026/01/24 (六)
+          - generic [ref=e969]:
+            - generic [ref=e971]:
+              - button "1 07:00 西鐵 Inn 新宿 飯店出發" [ref=e972] [cursor=pointer]:
+                - generic [ref=e973]:
+                  - generic [ref=e974]: "1"
+                  - generic [ref=e975]: 07:00
+                - generic [ref=e976]:
+                  - generic [ref=e977]:
+                    - generic [ref=e978]: 西鐵 Inn 新宿
+                    - img [ref=e980]
+                  - generic [ref=e982]: 飯店出發
+              - generic [ref=e983]:
+                - button "顯示詳細資訊" [ref=e984] [cursor=pointer]:
+                  - img [ref=e985]
+                - link "在 Google 地圖中開啟" [ref=e987] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E9%90%B5%20Inn%20%E6%96%B0%E5%AE%BF%2035.694%2C139.695
+                  - img [ref=e988]
+            - generic [ref=e993]:
+              - button "2 07:30 明治神宮 晨間散步" [ref=e994] [cursor=pointer]:
+                - generic [ref=e995]:
+                  - generic [ref=e996]: "2"
+                  - generic [ref=e997]: 07:30
+                - generic [ref=e998]:
+                  - generic [ref=e999]:
+                    - generic [ref=e1000]: 明治神宮
+                    - img [ref=e1002]
+                  - generic [ref=e1005]: 晨間散步
+              - generic [ref=e1006]:
+                - button "顯示詳細資訊" [ref=e1007] [cursor=pointer]:
+                  - img [ref=e1008]
+                - link "在 Google 地圖中開啟" [ref=e1010] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%98%8E%E6%B2%BB%E7%A5%9E%E5%AE%AE%2035.676%2C139.699
+                  - img [ref=e1011]
+            - generic [ref=e1016]:
+              - button "3 09:00 豪德寺 參拜" [ref=e1017] [cursor=pointer]:
+                - generic [ref=e1018]:
+                  - generic [ref=e1019]: "3"
+                  - generic [ref=e1020]: 09:00
+                - generic [ref=e1021]:
+                  - generic [ref=e1022]:
+                    - generic [ref=e1023]: 豪德寺
+                    - img [ref=e1025]
+                  - generic [ref=e1028]: 參拜
+              - generic [ref=e1029]:
+                - button "顯示詳細資訊" [ref=e1030] [cursor=pointer]:
+                  - img [ref=e1031]
+                - link "在 Google 地圖中開啟" [ref=e1033] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E8%B1%AA%E5%BE%B7%E5%AF%BA%2035.648%2C139.647
+                  - img [ref=e1034]
+            - generic [ref=e1039]:
+              - button "4 10:30 下北澤 逛街" [ref=e1040] [cursor=pointer]:
+                - generic [ref=e1041]:
+                  - generic [ref=e1042]: "4"
+                  - generic [ref=e1043]: 10:30
+                - generic [ref=e1044]:
+                  - generic [ref=e1045]:
+                    - generic [ref=e1046]: 下北澤
+                    - img [ref=e1048]
+                  - generic [ref=e1051]: 逛街
+              - generic [ref=e1052]:
+                - button "顯示詳細資訊" [ref=e1053] [cursor=pointer]:
+                  - img [ref=e1054]
+                - link "在 Google 地圖中開啟" [ref=e1056] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E4%B8%8B%E5%8C%97%E6%BE%A4%2035.662%2C139.667
+                  - img [ref=e1057]
+            - generic [ref=e1062]:
+              - button "5 12:00 根岸牛舌 吉祥寺店 午餐" [ref=e1063] [cursor=pointer]:
+                - generic [ref=e1064]:
+                  - generic [ref=e1065]: "5"
+                  - generic [ref=e1066]: 12:00
+                - generic [ref=e1067]:
+                  - generic [ref=e1068]:
+                    - generic [ref=e1069]: 根岸牛舌 吉祥寺店
+                    - img [ref=e1071]
+                  - generic [ref=e1074]: 午餐
+              - generic [ref=e1075]:
+                - button "顯示詳細資訊" [ref=e1076] [cursor=pointer]:
+                  - img [ref=e1077]
+                - link "在 Google 地圖中開啟" [ref=e1079] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%A0%B9%E5%B2%B8%E7%89%9B%E8%88%8C%20%E5%90%89%E7%A5%A5%E5%AF%BA%E5%BA%97%2035.703%2C139.58
+                  - img [ref=e1080]
+            - generic [ref=e1085]:
+              - button "6 13:00 井之頭恩賜公園 散步" [ref=e1086] [cursor=pointer]:
+                - generic [ref=e1087]:
+                  - generic [ref=e1088]: "6"
+                  - generic [ref=e1089]: 13:00
+                - generic [ref=e1090]:
+                  - generic [ref=e1091]:
+                    - generic [ref=e1092]: 井之頭恩賜公園
+                    - img [ref=e1094]
+                  - generic [ref=e1097]: 散步
+              - generic [ref=e1098]:
+                - button "顯示詳細資訊" [ref=e1099] [cursor=pointer]:
+                  - img [ref=e1100]
+                - link "在 Google 地圖中開啟" [ref=e1102] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E4%BA%95%E4%B9%8B%E9%A0%AD%E6%81%A9%E8%B3%9C%E5%85%AC%E5%9C%92%2035.7%2C139.576
+                  - img [ref=e1103]
+            - generic [ref=e1108]:
+              - button "7 15:30 成田機場 (NRT) 自駕前往機場" [ref=e1109] [cursor=pointer]:
+                - generic [ref=e1110]:
+                  - generic [ref=e1111]: "7"
+                  - generic [ref=e1112]: 15:30
+                - generic [ref=e1113]:
+                  - generic [ref=e1114]:
+                    - generic [ref=e1115]: 成田機場 (NRT)
+                    - img [ref=e1117]
+                  - generic [ref=e1121]: 自駕前往機場
+              - generic [ref=e1122]:
+                - button "顯示詳細資訊" [ref=e1123] [cursor=pointer]:
+                  - img [ref=e1124]
+                - link "在 Google 地圖中開啟" [ref=e1126] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%88%90%E7%94%B0%E6%A9%9F%E5%A0%B4%20(NRT)%2035.772%2C140.392
+                  - img [ref=e1127]
+            - generic [ref=e1132]:
+              - button "8 20:20 成田機場 (NRT) 搭機返台" [ref=e1133] [cursor=pointer]:
+                - generic [ref=e1134]:
+                  - generic [ref=e1135]: "8"
+                  - generic [ref=e1136]: 20:20
+                - generic [ref=e1137]:
+                  - generic [ref=e1138]:
+                    - generic [ref=e1139]: 成田機場 (NRT)
+                    - img [ref=e1141]
+                  - generic [ref=e1143]: 搭機返台
+              - generic [ref=e1144]:
+                - button "顯示詳細資訊" [ref=e1145] [cursor=pointer]:
+                  - img [ref=e1146]
+                - link "在 Google 地圖中開啟" [ref=e1148] [cursor=pointer]:
+                  - /url: https://www.google.com/maps/search/?api=1&query=%E6%88%90%E7%94%B0%E6%A9%9F%E5%A0%B4%20(NRT)%2035.772%2C140.392
+                  - img [ref=e1149]
+  - main [ref=e1153]:
+    - generic [ref=e1154]:
+      - generic [ref=e1156]:
+        - button "地圖視圖" [ref=e1157] [cursor=pointer]:
+          - img [ref=e1158]
+          - generic [ref=e1160]: 地圖視圖
+        - button "行程細節" [ref=e1161] [cursor=pointer]:
+          - img [ref=e1162]
+          - generic [ref=e1165]: 行程細節
+        - button "住宿預訂" [ref=e1166] [cursor=pointer]:
+          - img [ref=e1167]
+          - generic [ref=e1169]: 住宿預訂
+        - button "機票資訊" [active] [ref=e1170] [cursor=pointer]:
+          - img [ref=e1171]
+          - generic [ref=e1173]: 機票資訊
+        - button "攜帶清單" [ref=e1174] [cursor=pointer]:
+          - img [ref=e1175]
+          - generic [ref=e1178]: 攜帶清單
+        - button "匯出資料" [ref=e1179] [cursor=pointer]:
+          - img [ref=e1180]
+          - generic [ref=e1183]: 匯出資料
+      - button "氣候預測" [ref=e1184] [cursor=pointer]:
+        - img [ref=e1185]
+        - generic [ref=e1187]: 氣候預測
+    - generic [ref=e1190]:
+      - heading "機票資訊" [level=2] [ref=e1191]:
+        - img [ref=e1192]
+        - text: 機票資訊
+      - generic [ref=e1194]:
+        - generic [ref=e1195]:
+          - generic [ref=e1196]:
+            - generic [ref=e1197]:
+              - img [ref=e1198]
+              - generic [ref=e1200]: EVA AIR 長榮航空
+            - generic [ref=e1201]: BR184
+          - generic [ref=e1202]:
+            - generic [ref=e1203]:
+              - generic [ref=e1204]:
+                - generic [ref=e1205]: TPE
+                - generic [ref=e1206]: 台北桃園
+                - generic [ref=e1207]: 07:55
+                - generic [ref=e1208]: 第一航廈
+              - generic [ref=e1209]:
+                - generic [ref=e1210]: Flight Duration
+                - img [ref=e1214]
+                - generic [ref=e1218]: 03:05
+              - generic [ref=e1219]:
+                - generic [ref=e1220]: NRT
+                - generic [ref=e1221]: 東京成田
+                - generic [ref=e1222]: 12:00
+                - generic [ref=e1223]: Day 1
+            - generic [ref=e1224]:
+              - generic [ref=e1225]:
+                - generic [ref=e1226]: Class
+                - generic [ref=e1227]: V / 經濟艙
+              - generic [ref=e1228]:
+                - generic [ref=e1229]: Baggage
+                - generic [ref=e1230]: 1PC
+              - generic [ref=e1231]:
+                - generic [ref=e1232]: Status
+                - generic [ref=e1233]: OK
+              - generic [ref=e1234]:
+                - generic [ref=e1235]: Date
+                - generic [ref=e1236]: 2026/01/20
+        - generic [ref=e1237]:
+          - generic [ref=e1238]:
+            - generic [ref=e1239]:
+              - img [ref=e1240]
+              - generic [ref=e1242]: EVA AIR 長榮航空
+            - generic [ref=e1243]: BR195
+          - generic [ref=e1244]:
+            - generic [ref=e1245]:
+              - generic [ref=e1246]:
+                - generic [ref=e1247]: NRT
+                - generic [ref=e1248]: 東京成田
+                - generic [ref=e1249]: 20:20
+                - generic [ref=e1250]: 第一航廈
+              - generic [ref=e1251]:
+                - generic [ref=e1252]: Flight Duration
+                - img [ref=e1256]
+                - generic [ref=e1260]: 04:05
+              - generic [ref=e1261]:
+                - generic [ref=e1262]: TPE
+                - generic [ref=e1263]: 台北桃園
+                - generic [ref=e1264]: 23:25
+                - generic [ref=e1265]: Day 5
+            - generic [ref=e1266]:
+              - generic [ref=e1267]:
+                - generic [ref=e1268]: Class
+                - generic [ref=e1269]: Q / 經濟艙
+              - generic [ref=e1270]:
+                - generic [ref=e1271]: Baggage
+                - generic [ref=e1272]: 2PC
+              - generic [ref=e1273]:
+                - generic [ref=e1274]: Status
+                - generic [ref=e1275]: OK
+              - generic [ref=e1276]:
+                - generic [ref=e1277]: Date
+                - generic [ref=e1278]: 2026/01/24
+```

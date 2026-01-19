@@ -68,12 +68,13 @@ export interface ChecklistItem {
   checked: boolean;
 }
 
-// Save checklist item state
-export async function saveChecklistItem(itemId: string, checked: boolean): Promise<boolean> {
+// Save checklist item state (per user)
+export async function saveChecklistItem(itemId: string, checked: boolean, userId: string = 'default'): Promise<boolean> {
+  const compositeId = `${userId}:${itemId}`;
   const { error } = await supabase
     .from('packing_checklist')
     .upsert(
-      { item_id: itemId, checked, updated_at: new Date().toISOString() },
+      { item_id: compositeId, user_id: userId, original_item_id: itemId, checked, updated_at: new Date().toISOString() },
       { onConflict: 'item_id' }
     );
 
@@ -84,11 +85,12 @@ export async function saveChecklistItem(itemId: string, checked: boolean): Promi
   return true;
 }
 
-// Load all checklist items
-export async function loadAllChecklistItems(): Promise<Record<string, boolean>> {
+// Load all checklist items for a specific user
+export async function loadAllChecklistItems(userId: string = 'default'): Promise<Record<string, boolean>> {
   const { data, error } = await supabase
     .from('packing_checklist')
-    .select('item_id, checked');
+    .select('item_id, original_item_id, checked')
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Error loading checklist:', error);
@@ -97,7 +99,9 @@ export async function loadAllChecklistItems(): Promise<Record<string, boolean>> 
 
   const items: Record<string, boolean> = {};
   data?.forEach((item) => {
-    items[item.item_id] = item.checked;
+    // Use original_item_id if available, otherwise extract from composite id
+    const itemId = item.original_item_id || item.item_id.replace(`${userId}:`, '');
+    items[itemId] = item.checked;
   });
   return items;
 }
@@ -121,12 +125,12 @@ export async function saveAllChecklistItems(items: Record<string, boolean>): Pro
   return true;
 }
 
-// Reset all checklist items to unchecked
-export async function resetAllChecklistItems(): Promise<boolean> {
+// Reset all checklist items to unchecked for a specific user
+export async function resetAllChecklistItems(userId: string = 'default'): Promise<boolean> {
   const { error } = await supabase
     .from('packing_checklist')
     .update({ checked: false, updated_at: new Date().toISOString() })
-    .neq('item_id', '');
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Error resetting checklist:', error);
@@ -141,15 +145,16 @@ export interface CustomChecklistItem {
   category_id: string;
   name: string;
   note?: string;
+  user_id?: string;
   created_at?: string;
 }
 
-// Save custom item
-export async function saveCustomItem(item: { id: string; category_id: string; name: string; note?: string }): Promise<boolean> {
+// Save custom item (per user)
+export async function saveCustomItem(item: { id: string; category_id: string; name: string; note?: string }, userId: string = 'default'): Promise<boolean> {
   const { error } = await supabase
     .from('custom_checklist_items')
     .upsert(
-      { ...item, updated_at: new Date().toISOString() },
+      { ...item, user_id: userId, updated_at: new Date().toISOString() },
       { onConflict: 'id' }
     );
 
@@ -160,11 +165,12 @@ export async function saveCustomItem(item: { id: string; category_id: string; na
   return true;
 }
 
-// Load all custom items
-export async function loadCustomItems(): Promise<CustomChecklistItem[]> {
+// Load all custom items for a specific user
+export async function loadCustomItems(userId: string = 'default'): Promise<CustomChecklistItem[]> {
   const { data, error } = await supabase
     .from('custom_checklist_items')
-    .select('*');
+    .select('*')
+    .eq('user_id', userId);
 
   if (error) {
     console.error('Error loading custom items:', error);

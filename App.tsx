@@ -117,10 +117,17 @@ const App: React.FC = () => {
 
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // Valid users
+  const VALID_USERS: Record<string, string> = {
+    'yvonne': 'neihu',
+    'albert': 'neihu'
+  };
 
   // Checklist state
   const [checklistItems, setChecklistItems] = useState<Record<string, boolean>>({});
@@ -146,48 +153,63 @@ const App: React.FC = () => {
     loadNotes();
   }, []);
 
-  // Load checklist items from Supabase on mount
+  // Load checklist items from Supabase when user changes
   useEffect(() => {
     const loadChecklist = async () => {
-      const items = await loadAllChecklistItems();
+      if (!currentUser) {
+        setChecklistItems({});
+        return;
+      }
+      const items = await loadAllChecklistItems(currentUser);
       if (Object.keys(items).length > 0) {
         setChecklistItems(items);
       } else {
         // Fallback to localStorage if no items in DB yet
-        const saved = localStorage.getItem('packingChecklist');
+        const saved = localStorage.getItem(`packingChecklist_${currentUser}`);
         if (saved) setChecklistItems(JSON.parse(saved));
+        else setChecklistItems({});
       }
     };
     loadChecklist();
-  }, []);
+  }, [currentUser]);
 
-  // Load custom items from Supabase on mount
+  // Load custom items from Supabase when user changes
   useEffect(() => {
     const loadCustom = async () => {
-      const items = await loadCustomItems();
+      if (!currentUser) {
+        setCustomItems([]);
+        return;
+      }
+      const items = await loadCustomItems(currentUser);
       if (items.length > 0) {
         setCustomItems(items);
       } else {
         // Fallback to localStorage
-        const saved = localStorage.getItem('customChecklistItems');
+        const saved = localStorage.getItem(`customChecklistItems_${currentUser}`);
         if (saved) setCustomItems(JSON.parse(saved));
+        else setCustomItems([]);
       }
     };
     loadCustom();
-  }, []);
+  }, [currentUser]);
 
   // Check for saved authentication
   useEffect(() => {
     const authStatus = sessionStorage.getItem('tripAuth');
-    if (authStatus === 'authenticated') {
+    const savedUser = sessionStorage.getItem('tripUser');
+    if (authStatus === 'authenticated' && savedUser) {
       setIsAuthenticated(true);
+      setCurrentUser(savedUser);
     }
   }, []);
 
   const handleLogin = () => {
-    if (username === 'yvonne' && password === 'neihu') {
+    const lowerUsername = username.toLowerCase();
+    if (VALID_USERS[lowerUsername] && VALID_USERS[lowerUsername] === password) {
       setIsAuthenticated(true);
+      setCurrentUser(lowerUsername);
       sessionStorage.setItem('tripAuth', 'authenticated');
+      sessionStorage.setItem('tripUser', lowerUsername);
       setShowLoginModal(false);
       setLoginError('');
       setUsername('');
@@ -199,11 +221,15 @@ const App: React.FC = () => {
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setCurrentUser('');
+    setChecklistItems({});
+    setCustomItems([]);
     sessionStorage.removeItem('tripAuth');
+    sessionStorage.removeItem('tripUser');
   };
 
   const toggleChecklistItem = async (itemId: string) => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !currentUser) {
       setShowLoginModal(true);
       return;
     }
@@ -211,11 +237,11 @@ const App: React.FC = () => {
     const updated = { ...checklistItems, [itemId]: newChecked };
     setChecklistItems(updated);
 
-    // Save to Supabase
-    const success = await saveChecklistItem(itemId, newChecked);
+    // Save to Supabase with user
+    const success = await saveChecklistItem(itemId, newChecked, currentUser);
     if (!success) {
       // Fallback to localStorage if Supabase fails
-      localStorage.setItem('packingChecklist', JSON.stringify(updated));
+      localStorage.setItem(`packingChecklist_${currentUser}`, JSON.stringify(updated));
     }
   };
 
@@ -254,10 +280,10 @@ const App: React.FC = () => {
   };
 
   const handleAddItem = async (categoryId: string) => {
-    if (!newItemName.trim()) return;
+    if (!newItemName.trim() || !currentUser) return;
 
     const newItem: CustomChecklistItem = {
-      id: `custom-${Date.now()}`,
+      id: `custom-${currentUser}-${Date.now()}`,
       category_id: categoryId,
       name: newItemName.trim(),
       note: newItemNote.trim() || undefined
@@ -266,10 +292,10 @@ const App: React.FC = () => {
     const updated = [...customItems, newItem];
     setCustomItems(updated);
 
-    // Save to Supabase
-    const success = await saveCustomItem(newItem);
+    // Save to Supabase with user
+    const success = await saveCustomItem(newItem, currentUser);
     if (!success) {
-      localStorage.setItem('customChecklistItems', JSON.stringify(updated));
+      localStorage.setItem(`customChecklistItems_${currentUser}`, JSON.stringify(updated));
     }
 
     setNewItemName('');
@@ -288,12 +314,14 @@ const App: React.FC = () => {
 
     // Delete from Supabase
     const success = await deleteCustomItem(itemId);
-    if (!success) {
-      localStorage.setItem('customChecklistItems', JSON.stringify(updated));
+    if (!success && currentUser) {
+      localStorage.setItem(`customChecklistItems_${currentUser}`, JSON.stringify(updated));
     }
   };
 
   const handleResetAll = async () => {
+    if (!currentUser) return;
+
     // Reset all checkboxes to unchecked
     const resetItems: Record<string, boolean> = {};
 
@@ -312,10 +340,10 @@ const App: React.FC = () => {
     setChecklistItems(resetItems);
     setShowResetConfirm(false);
 
-    // Save to Supabase
-    const success = await resetAllChecklistItems();
+    // Save to Supabase with user
+    const success = await resetAllChecklistItems(currentUser);
     if (!success) {
-      localStorage.setItem('packingChecklist', JSON.stringify(resetItems));
+      localStorage.setItem(`packingChecklist_${currentUser}`, JSON.stringify(resetItems));
     }
   };
 
@@ -1284,7 +1312,7 @@ const App: React.FC = () => {
                         className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-bold transition-colors"
                       >
                         <User size={16} className="text-green-600" />
-                        <span className="hidden sm:inline">yvonne</span>
+                        <span className="hidden sm:inline">{currentUser}</span>
                         <LogOut size={14} />
                       </button>
                     ) : (
