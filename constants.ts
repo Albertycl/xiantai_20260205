@@ -153,9 +153,9 @@ export const ITINERARY_DATA: DayPlan[] = [
       { id: '4-2', day: 4, time: '10:30', location: '築地場外市場', activity: 'Brunch', notes: '海鮮大賞', lat: 35.665, lng: 139.771, type: 'food' },
       { id: '4-3', day: 4, time: '11:30', location: '小網神社', activity: '參拜', notes: '強運厄除、洗錢', lat: 35.685, lng: 139.777, type: 'sightseeing' },
       { id: '4-4', day: 4, time: '12:30', location: '銀座 炸豬排 檍', activity: '午餐', notes: '極上炸豬排', lat: 35.669, lng: 139.761, type: 'food' },
-      { id: '4-5', day: 4, time: '14:00', location: '皇居二重橋', activity: '散步', notes: '皇室氣派', lat: 35.679, lng: 139.758, type: 'sightseeing' },
-      { id: '4-6', day: 4, time: '15:30', location: '宮下公園', activity: '散步/咖啡', notes: '澀谷新地標星巴克', lat: 35.662, lng: 139.702, type: 'sightseeing' },
-      { id: '4-7', day: 4, time: '13:30', location: 'SHIBUYA SKY', activity: '賞夕陽夜景', notes: '澀谷之巔', lat: 35.658, lng: 139.702, type: 'sightseeing' },
+      { id: '4-5', day: 4, time: '13:30', location: 'SHIBUYA SKY', activity: '賞夕陽夜景', notes: '澀谷之巔', lat: 35.658, lng: 139.702, type: 'sightseeing' },
+      { id: '4-6', day: 4, time: '14:00', location: '皇居二重橋', activity: '散步', notes: '皇室氣派', lat: 35.679, lng: 139.758, type: 'sightseeing' },
+      { id: '4-7', day: 4, time: '15:30', location: '宮下公園', activity: '散步/咖啡', notes: '澀谷新地標星巴克', lat: 35.662, lng: 139.702, type: 'sightseeing' },
       { id: '4-8', day: 4, time: '18:00', location: 'AND THE FRIET', activity: '點心', notes: '澀谷 Hikarie B2F', lat: 35.658, lng: 139.703, type: 'food' },
       { id: '4-9', day: 4, time: '18:30', location: 'Peter Luger Steakhouse', activity: '頂級晚餐', notes: '惠比壽分店', lat: 35.643, lng: 139.715, type: 'food' },
       { id: '4-10', day: 4, time: '21:00', location: '西鐵 Inn 新宿', activity: '住宿', notes: '返回住宿', lat: 35.694, lng: 139.695, type: 'stay' }
