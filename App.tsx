@@ -37,12 +37,13 @@ import {
   User,
   Plus,
   Trash2,
-  RotateCcw
+  RotateCcw,
+  MapPin
 } from 'lucide-react';
 import { ITINERARY_DATA, DANGEROUS_ROUTES } from './constants';
 import { fetchWeatherData } from './weatherService';
 import { DayPlan, TripEvent, WeatherData } from './types';
-import { saveNote, loadAllNotes, saveChecklistItem, loadAllChecklistItems, resetAllChecklistItems, saveCustomItem, loadCustomItems, deleteCustomItem, CustomChecklistItem } from './supabaseClient';
+import { saveNote, loadAllNotes, saveChecklistItem, loadAllChecklistItems, resetAllChecklistItems, saveCustomItem, loadCustomItems, deleteCustomItem, CustomChecklistItem, saveEventLocation, loadAllEventLocations, deleteEventLocation } from './supabaseClient';
 import { PACKING_CHECKLIST, ChecklistCategory } from './checklistData';
 
 // Initial empty state or loading state could be handled, but for now we start empty
@@ -116,6 +117,11 @@ const App: React.FC = () => {
   const [eventDetails, setEventDetails] = useState<Record<string, string>>({});
   const [savingNote, setSavingNote] = useState<string | null>(null);
 
+  // Location override state
+  const [eventLocations, setEventLocations] = useState<Record<string, { lat: number; lng: number }>>({});
+  const [editingLocation, setEditingLocation] = useState<string | null>(null);
+  const [savingLocation, setSavingLocation] = useState<string | null>(null);
+
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<string>('');
@@ -152,6 +158,21 @@ const App: React.FC = () => {
       }
     };
     loadNotes();
+  }, []);
+
+  // Load location overrides from Supabase on mount
+  useEffect(() => {
+    const loadLocations = async () => {
+      const locations = await loadAllEventLocations();
+      if (Object.keys(locations).length > 0) {
+        setEventLocations(locations);
+      } else {
+        // Fallback to localStorage if no locations in DB yet
+        const saved = localStorage.getItem('tripEventLocations');
+        if (saved) setEventLocations(JSON.parse(saved));
+      }
+    };
+    loadLocations();
   }, []);
 
   // Load checklist items from Supabase when user changes
@@ -372,6 +393,51 @@ const App: React.FC = () => {
   const getEventDetails = (event: TripEvent) => {
     return eventDetails[event.id] !== undefined ? eventDetails[event.id] : (event.details || '');
   };
+
+  // Save location override
+  const saveLocationOverride = async (eventId: string, lat: number, lng: number) => {
+    setSavingLocation(eventId);
+    const updated = { ...eventLocations, [eventId]: { lat, lng } };
+    setEventLocations(updated);
+
+    // Save to Supabase
+    const success = await saveEventLocation(eventId, lat, lng);
+    if (success) {
+      console.log('Location saved to Supabase');
+    } else {
+      // Fallback to localStorage if Supabase fails
+      localStorage.setItem('tripEventLocations', JSON.stringify(updated));
+      console.log('Saved to localStorage (Supabase unavailable)');
+    }
+    setSavingLocation(null);
+  };
+
+  // Reset location to original
+  const resetLocationOverride = async (eventId: string) => {
+    setSavingLocation(eventId);
+    const updated = { ...eventLocations };
+    delete updated[eventId];
+    setEventLocations(updated);
+
+    // Delete from Supabase
+    const success = await deleteEventLocation(eventId);
+    if (!success) {
+      // Fallback to localStorage
+      localStorage.setItem('tripEventLocations', JSON.stringify(updated));
+    }
+    setSavingLocation(null);
+    setEditingLocation(null);
+  };
+
+  // Get effective location (custom or original)
+  const getEventLocation = (event: TripEvent) => {
+    return eventLocations[event.id] || { lat: event.lat, lng: event.lng };
+  };
+
+  // Check if event has custom location
+  const hasCustomLocation = (eventId: string) => {
+    return eventLocations[eventId] !== undefined;
+  };
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [mapConfig, setMapConfig] = useState<{ center: [number, number], zoom: number }>({
     center: [35.6895, 139.6917],
@@ -393,7 +459,8 @@ const App: React.FC = () => {
 
   const handleFocusLocation = (event: TripEvent) => {
     setSelectedDay(event.day);
-    setMapConfig({ center: [event.lat, event.lng], zoom: 15 });
+    const loc = getEventLocation(event);
+    setMapConfig({ center: [loc.lat, loc.lng], zoom: 15 });
     if (window.innerWidth < 768) setSidebarOpen(false);
     setActiveTab('map');
   };
@@ -414,12 +481,11 @@ const App: React.FC = () => {
   }, [selectedDay, currentDayData]);
 
   const generateMarkdown = () => {
-    let md = '| Day | 序號 | 時間 | 地點/活動 | Google Map | 備註/天氣預測 |\n';
-    md += '| --- | --- | --- | --- | --- | --- |\n';
+    let md = '| Day | 時間 | 地點 | 活動 |\n';
+    md += '| --- | --- | --- | --- |\n';
     ITINERARY_DATA.forEach(day => {
-      const weather = weatherData.find(w => w.day === day.day);
-      day.events.forEach((event, idx) => {
-        md += `| Day ${day.day} | ${idx + 1} | ${event.time} | ${event.location} (${event.activity}) | [開啟地圖](${getGoogleMapsUrl(event.location, event.lat, event.lng)}) | ${weather?.temp} ${weather?.desc} - ${event.notes} |\n`;
+      day.events.forEach((event) => {
+        md += `| Day ${day.day} | ${event.time} | ${event.location} | ${event.activity} |\n`;
       });
     });
     return md;
@@ -540,8 +606,9 @@ const App: React.FC = () => {
                             >
                               {expandedEvent === event.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </button>
+                            {(() => { const loc = getEventLocation(event); return (
                             <a
-                              href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                              href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50"
@@ -549,6 +616,7 @@ const App: React.FC = () => {
                             >
                               <ExternalLink size={14} />
                             </a>
+                            ); })()}
                           </div>
                         </div>
                         {/* Expandable Details Section */}
@@ -640,6 +708,107 @@ const App: React.FC = () => {
                                     點擊此處新增筆記...
                                   </div>
                                 )
+                              )}
+                            </div>
+
+                            {/* Location Override Section */}
+                            <div className="bg-green-50 rounded-lg p-3 border border-green-100 mt-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600">
+                                  <MapPin size={12} />
+                                  <span>地圖座標</span>
+                                  {hasCustomLocation(event.id) && (
+                                    <span className="text-[9px] bg-green-200 text-green-700 px-1.5 py-0.5 rounded">已自訂</span>
+                                  )}
+                                </div>
+                                {editingLocation === event.id ? (
+                                  <div className="flex items-center gap-1">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingLocation(null);
+                                      }}
+                                      className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors"
+                                      title="取消"
+                                    >
+                                      <XCircle size={14} />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingLocation(event.id);
+                                    }}
+                                    className="p-1 text-slate-400 hover:text-green-600 rounded transition-colors"
+                                    title="編輯座標"
+                                  >
+                                    <Edit3 size={14} />
+                                  </button>
+                                )}
+                              </div>
+                              {editingLocation === event.id ? (
+                                <div className="space-y-2">
+                                  <div>
+                                    <label className="text-[10px] text-slate-500 mb-0.5 block">從 Google Maps 貼上座標 (例: 38.135143, 140.494848)</label>
+                                    <input
+                                      type="text"
+                                      className="w-full text-xs text-slate-700 bg-white p-2 rounded border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-500 font-mono"
+                                      defaultValue={`${getEventLocation(event).lat}, ${getEventLocation(event).lng}`}
+                                      id={`coords-${event.id}`}
+                                      placeholder="38.135143, 140.494848"
+                                      onClick={(e) => e.stopPropagation()}
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={async (e) => {
+                                        e.stopPropagation();
+                                        const coordsInput = document.getElementById(`coords-${event.id}`) as HTMLInputElement;
+                                        const parts = coordsInput.value.split(',').map(s => s.trim());
+                                        if (parts.length === 2) {
+                                          const lat = parseFloat(parts[0]);
+                                          const lng = parseFloat(parts[1]);
+                                          if (!isNaN(lat) && !isNaN(lng)) {
+                                            await saveLocationOverride(event.id, lat, lng);
+                                            setEditingLocation(null);
+                                          }
+                                        }
+                                      }}
+                                      disabled={savingLocation === event.id}
+                                      className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-xs font-bold rounded-lg transition-colors"
+                                    >
+                                      {savingLocation === event.id ? (
+                                        <>
+                                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                          儲存中...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Save size={12} />
+                                          儲存
+                                        </>
+                                      )}
+                                    </button>
+                                    {hasCustomLocation(event.id) && (
+                                      <button
+                                        onClick={async (e) => {
+                                          e.stopPropagation();
+                                          await resetLocationOverride(event.id);
+                                        }}
+                                        disabled={savingLocation === event.id}
+                                        className="flex items-center gap-1 px-3 py-1.5 bg-slate-500 hover:bg-slate-600 disabled:bg-slate-400 text-white text-xs font-bold rounded-lg transition-colors"
+                                      >
+                                        <RotateCcw size={12} />
+                                        還原
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-xs text-slate-600 bg-white p-2 rounded border border-slate-200 font-mono">
+                                  {getEventLocation(event).lat.toFixed(4)}, {getEventLocation(event).lng.toFixed(4)}
+                                </div>
                               )}
                             </div>
                           </div>
@@ -752,8 +921,10 @@ const App: React.FC = () => {
                 {selectedDay === 'all' ? (
                   ITINERARY_DATA.map(day => (
                     <React.Fragment key={`day-${day.day}`}>
-                      {day.events.map((event, eventIdx) => (
-                        <Marker key={event.id} position={[event.lat, event.lng]} icon={createCustomIcon(day.color, eventIdx + 1)}>
+                      {day.events.map((event, eventIdx) => {
+                        const loc = getEventLocation(event);
+                        return (
+                        <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(day.color, eventIdx + 1)}>
                           <Popup>
                             <div className="p-4 min-w-[240px]">
                               <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
@@ -797,7 +968,7 @@ const App: React.FC = () => {
                                 </div>
                               )}
                               <a
-                                href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                                href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:shadow-xl no-underline active:scale-95"
@@ -808,17 +979,20 @@ const App: React.FC = () => {
                             </div>
                           </Popup>
                         </Marker>
-                      ))}
+                        );
+                      })}
                       <Polyline
-                        positions={day.events.map(e => [e.lat, e.lng])}
+                        positions={day.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
                         pathOptions={{ color: day.color, weight: 4, opacity: 0.7, dashArray: '10, 10' }}
                       />
                     </React.Fragment>
                   ))
                 ) : currentDayData && (
                   <React.Fragment>
-                    {currentDayData.events.map((event, eventIdx) => (
-                      <Marker key={event.id} position={[event.lat, event.lng]} icon={createCustomIcon(currentDayData.color, eventIdx + 1)}>
+                    {currentDayData.events.map((event, eventIdx) => {
+                      const loc = getEventLocation(event);
+                      return (
+                      <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(currentDayData.color, eventIdx + 1)}>
                         <Popup>
                           <div className="p-4 min-w-[240px]">
                             <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
@@ -862,7 +1036,7 @@ const App: React.FC = () => {
                               </div>
                             )}
                             <a
-                              href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                              href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:shadow-xl no-underline active:scale-95"
@@ -873,9 +1047,10 @@ const App: React.FC = () => {
                           </div>
                         </Popup>
                       </Marker>
-                    ))}
+                      );
+                    })}
                     <Polyline
-                      positions={currentDayData.events.map(e => [e.lat, e.lng])}
+                      positions={currentDayData.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
                       pathOptions={{ color: currentDayData.color, weight: 4, opacity: 0.7, dashArray: '10, 10' }}
                     />
                   </React.Fragment>
@@ -1084,10 +1259,11 @@ const App: React.FC = () => {
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 font-mono">{event.time}</td>
                               <td className="px-4 py-3 text-sm text-slate-900">
+                                {(() => { const loc = getEventLocation(event); return (
                                 <div className="flex items-center gap-2 font-semibold">
                                   {event.location}
                                   <a
-                                    href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                                    href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-blue-500 hover:text-blue-700"
@@ -1095,6 +1271,7 @@ const App: React.FC = () => {
                                     <ExternalLink size={12} />
                                   </a>
                                 </div>
+                                ); })()}
                                 <div className="text-xs text-slate-500 mt-0.5">{event.activity}</div>
                               </td>
                               <td className="px-4 py-3 text-sm text-slate-500 italic">
@@ -1163,13 +1340,14 @@ const App: React.FC = () => {
                             </div>
                           </div>
                           <div className="p-4">
+                            {(() => { const loc = getEventLocation(event); return (
                             <div className="flex justify-between items-start gap-2 mb-2">
                               <div>
                                 <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
                                 <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
                               </div>
                               <a
-                                href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                                href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
@@ -1177,6 +1355,7 @@ const App: React.FC = () => {
                                 <ExternalLink size={16} />
                               </a>
                             </div>
+                            ); })()}
 
                             {event.notes && (
                               <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">
@@ -1272,9 +1451,10 @@ const App: React.FC = () => {
                             </div>
                           </div>
                         </div>
+                        {(() => { const loc = getEventLocation(event); return (
                         <div className="mt-6 pt-6 border-t flex justify-end">
                           <a
-                            href={getGoogleMapsUrl(event.location, event.lat, event.lng)}
+                            href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-bold transition-colors"
@@ -1283,6 +1463,7 @@ const App: React.FC = () => {
                             查看地圖位置
                           </a>
                         </div>
+                        ); })()}
                       </div>
                     </div>
                   ))}

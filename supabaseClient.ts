@@ -192,3 +192,58 @@ export async function deleteCustomItem(itemId: string): Promise<boolean> {
   }
   return true;
 }
+
+// Types for event location overrides
+export interface EventLocation {
+  event_id: string;
+  lat: number;
+  lng: number;
+}
+
+// Save or update event location override
+export async function saveEventLocation(eventId: string, lat: number, lng: number): Promise<boolean> {
+  const { error } = await supabase
+    .from('event_locations')
+    .upsert(
+      { event_id: eventId, lat, lng, updated_at: new Date().toISOString() },
+      { onConflict: 'event_id' }
+    );
+
+  if (error) {
+    console.error('Error saving location:', error);
+    return false;
+  }
+  return true;
+}
+
+// Load all event location overrides
+export async function loadAllEventLocations(): Promise<Record<string, { lat: number; lng: number }>> {
+  const { data, error } = await supabase
+    .from('event_locations')
+    .select('event_id, lat, lng');
+
+  if (error) {
+    console.error('Error loading locations:', error);
+    return {};
+  }
+
+  const locations: Record<string, { lat: number; lng: number }> = {};
+  data?.forEach((loc) => {
+    locations[loc.event_id] = { lat: loc.lat, lng: loc.lng };
+  });
+  return locations;
+}
+
+// Delete event location override (reset to original)
+export async function deleteEventLocation(eventId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('event_locations')
+    .delete()
+    .eq('event_id', eventId);
+
+  if (error) {
+    console.error('Error deleting location:', error);
+    return false;
+  }
+  return true;
+}
