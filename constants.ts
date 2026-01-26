@@ -4,203 +4,625 @@ import { DayPlan } from './types';
 export const ITINERARY_DATA: DayPlan[] = [
   {
     day: 1,
-    date: '2026/01/20 (二)',
-    title: '抵達、燈飾與壽司迎賓',
+    date: '2026/02/07 (六)',
+    title: '抵達仙台、炭烤牛舌之夜',
     color: '#ef4444', // Red
     events: [
       {
         id: '1-1',
         day: 1,
-        time: '12:00',
-        location: '成田機場 (NRT)',
-        activity: '抵達機場',
-        notes: '第一航廈',
-        lat: 35.772,
-        lng: 140.392,
-        type: 'flight',
-        flight: {
-          airline: 'EVA AIR 長榮航空',
-          flightNumber: 'BR184',
-          departureTime: '07:55',
-          arrivalTime: '12:00',
-          departureAirport: 'TPE 台北桃園',
-          arrivalAirport: 'NRT 東京成田',
-          terminal: '第一航廈',
-          class: 'V / 經濟艙',
-          baggage: '1PC',
-          status: 'OK',
-          duration: '03:05'
-        }
+        time: '16:00',
+        location: '仙台機場 (SDJ)',
+        activity: '抵達 & 取車',
+        notes: '領取租車，準備出發',
+        lat: 38.139,
+        lng: 140.917,
+        type: 'transport'
       },
       {
         id: '1-2',
         day: 1,
-        time: '13:00',
-        location: 'ORIX 租車成田機場店',
-        activity: '取車手續',
-        notes: '預約號: 112072138 (PW: dcf3dd1a) / 68,420円 / Compact Hybrid (EA)',
-        lat: 35.765,
-        lng: 140.385,
-        type: 'transport'
-      },
-      { id: '1-3', day: 1, time: '15:30', location: '讀賣樂園', activity: '寶石燈飾秀', notes: '必看絕美點燈', lat: 35.625, lng: 139.517, type: 'sightseeing' },
-      { id: '1-4', day: 1, time: '20:00', location: '梅丘壽司之美登利', activity: '晚餐', notes: '新百合之丘OPA店', lat: 35.602, lng: 139.508, type: 'food' },
-      {
-        id: '1-5',
-        day: 1,
-        time: '21:30',
-        location: 'Hotel Molino Shin-Yuri',
-        activity: '住宿 Check-in',
-        notes: '首晚歇息',
-        lat: 35.602,
-        lng: 139.508,
+        time: '17:30',
+        location: '御宿 野乃 仙台',
+        activity: 'Check-in',
+        notes: '寄送大行李至 Day 4 (作並一之坊)',
+        lat: 38.262,
+        lng: 140.876,
         type: 'stay',
         booking: {
           provider: 'Official Site',
-          number: '0VM5XXCV',
-          price: '30,114円',
+          number: '08M9RYPH',
+          price: '85,100円',
           payment: '現地での支払い',
           status: 'ゴールド (Gold)',
-          people: 2,
-          period: '2026/01/20 - 2026/01/21'
+          people: 4,
+          period: '2026/02/07 - 2026/02/08'
         }
+      },
+      {
+        id: '1-3',
+        day: 1,
+        time: '19:00',
+        location: '仙台市區',
+        activity: '晚餐：炭烤牛舌',
+        notes: '推薦：善治郎、利久或司',
+        lat: 38.26,
+        lng: 140.88,
+        type: 'food'
       }
     ]
   },
   {
     day: 2,
-    date: '2026/01/21 (三)',
-    title: '富士野生動物園全制霸',
+    date: '2026/02/08 (日)',
+    title: '藏王樹冰與雪怪車',
     color: '#3b82f6', // Blue
     events: [
-      { id: '2-0', day: 2, time: '08:00', location: 'Hotel Molino Shin-Yuri', activity: '飯店出發', notes: '自駕往御殿場方向', lat: 35.602, lng: 139.508, type: 'stay' },
-      { id: '2-1', day: 2, time: '10:00', location: '富士野生動物園', activity: '叢林巴士、自駕Safari', notes: '10:00 開門 (冬季) / 親近野生動物', travelTime: '約 1 小時 30 分', lat: 35.247, lng: 138.838, type: 'sightseeing' },
-      { id: '2-2', day: 2, time: '11:15', location: '富士野生動物園', activity: 'Super Jungle Bus', notes: '要出示門票 / 需提早報到', lat: 35.247, lng: 138.838, type: 'sightseeing' },
-      { id: '2-3', day: 2, time: '16:00', location: 'Sawayaka 漢堡 炭焼きレストランさわやか 御殿場インター店', activity: '抽號碼牌', notes: '必吃漢堡排，需提前抽號', travelTime: '約 40 分', lat: 35.294, lng: 138.945, type: 'food' },
-      { id: '2-4', day: 2, time: '17:00', location: '御殿場 Premium Outlets', activity: '逛街購物', notes: '精品與風景', importantNotes: '持長榮登機證換旅行袋', travelTime: '約 10 分', lat: 35.308, lng: 138.966, type: 'shopping' },
-      { id: '2-5', day: 2, time: '21:00', location: '木之花之湯', activity: '溫泉享受', notes: '放鬆身心', lat: 35.305, lng: 138.968, type: 'sightseeing' },
       {
-        id: '2-6',
+        id: '2-1',
         day: 2,
-        time: '22:00',
-        location: 'HOTEL CLAD',
-        activity: '住宿',
-        notes: '御殿場住宿',
-        lat: 35.308,
-        lng: 138.966,
+        time: '08:30',
+        location: '御宿 野乃 仙台',
+        activity: '出發',
+        notes: '前往藏王',
+        importantNotes: '🚗 Alphard雪駕要訣：下坡務必用S檔/M檔引擎煞車，冰上單靠腳煞停不住！4WD只幫起步，煞車距離無幫助。',
+        lat: 38.262,
+        lng: 140.876,
+        type: 'stay'
+      },
+      {
+        id: '2-2',
+        day: 2,
+        time: '10:30',
+        location: '宮城藏王澄川雪樂園',
+        activity: '抵達雪樂園',
+        notes: '準備搭乘雪怪車',
+        importantNotes: '⚠️ 風險等級最高！縣道12號海拔急升，路面為壓實雪壁。建議大雪時將車停在「遠刈田溫泉」停車場，改搭免費接駁巴士「樹冰號」上下山。藏王Eco-Line冬季全線封閉，無法直接開往山形。',
+        lat: 38.125,
+        lng: 140.55,
+        type: 'sightseeing'
+      },
+      {
+        id: '2-3',
+        day: 2,
+        time: '11:00',
+        location: '雪怪車 (Wild Monster)',
+        activity: '樹冰巡禮',
+        notes: '免走路輕鬆看樹冰',
+        lat: 38.125,
+        lng: 140.55,
+        type: 'sightseeing'
+      },
+      {
+        id: '2-4',
+        day: 2,
+        time: '13:00',
+        location: '遠刈田溫泉街',
+        activity: '午餐',
+        notes: '手工蕎麥麵或漢堡排',
+        lat: 38.085,
+        lng: 140.57,
+        type: 'food'
+      },
+      {
+        id: '2-5',
+        day: 2,
+        time: '15:00',
+        location: 'ゆと森倶楽部',
+        activity: 'Check-in',
+        notes: '全包式蔬菜料理 Buffet',
+        lat: 38.09,
+        lng: 140.56,
         type: 'stay',
         booking: {
           provider: 'Official Site',
-          number: '09MX8JW1',
-          price: '29,080円',
-          payment: 'オンラインカード決済',
-          status: 'ゴールド (Gold)',
-          people: 2,
-          period: '2026/01/21 - 2026/01/22'
+          number: 'Confirmed',
+          price: '已付',
+          payment: 'Prepaid',
+          status: 'Confirmed',
+          people: 4,
+          period: '2026/02/08 - 2026/02/09'
         }
       }
     ]
   },
   {
     day: 3,
-    date: '2026/01/22 (四)',
-    title: '圍爐裏燒烤與新宿之夜',
+    date: '2026/02/09 (一)',
+    title: '狐狸村與天鵝湖',
     color: '#22c55e', // Green
     events: [
-      { id: '3-0', day: 3, time: '08:30', location: 'HOTEL CLAD', activity: '飯店出發', notes: '務必準時出發，確保 10:00 能到橫濱', travelTime: '約 1.5 小時 (東名高速)', lat: 35.308, lng: 138.966, type: 'stay' },
-      { id: '3-1', day: 3, time: '10:00', location: '橫濱紅磚倉庫', activity: '逛街/拍照', notes: '只有約 1 小時，專注拍照逛街', travelTime: '停車：紅磚倉庫停車場', lat: 35.459, lng: 139.642, type: 'sightseeing' },
-      { id: '3-2', day: 3, time: '11:20', location: '前往地標塔', activity: '關鍵移動', notes: '務必準時離開，開車至地標塔停車場', travelTime: '約 10 分鐘', lat: 35.455, lng: 139.631, type: 'transport' },
-      { id: '3-3', day: 3, time: '11:45', location: 'Sky Duck 售票處', activity: '集合報到', notes: '日本丸紀念公園 Sky Duck 售票處 / 神奈川縣橫濱市西區港未來2-1-1', lat: 35.454, lng: 139.632, type: 'sightseeing' },
-      { id: '3-4', day: 3, time: '12:00', location: 'Sky Duck 水陸巴士', activity: '【D801】みなとハイカラコース', notes: '7,200円 (2位) / 約50-60分 / 僅日語導覽 / 無窗設計注意保暖 / 禁食物、僅可帶有蓋飲品', lat: 35.454, lng: 139.632, type: 'sightseeing' },
-      { id: '3-5', day: 3, time: '13:00', location: 'Landmark Plaza', activity: '午餐', notes: 'Shake Shack、炸豬排等', lat: 35.455, lng: 139.631, type: 'food' },
-      { id: '3-6', day: 3, time: '14:30', location: 'HARBS 下午茶', activity: '下午茶', notes: 'Landmark Plaza 3F 吃草莓蛋糕', lat: 35.455, lng: 139.631, type: 'food' },
-      { id: '3-7', day: 3, time: '15:30', location: '前往東京新宿', activity: '移動', notes: '開車約 1 小時 (首都高)', lat: 35.694, lng: 139.695, type: 'transport' },
       {
-        id: '3-8',
+        id: '3-1',
+        day: 3,
+        time: '09:30',
+        location: 'ゆと森倶楽部',
+        activity: '出發',
+        notes: '前往狐狸村',
+        lat: 38.09,
+        lng: 140.56,
+        type: 'stay'
+      },
+      {
+        id: '3-2',
+        day: 3,
+        time: '10:00',
+        location: '藏王狐狸村',
+        activity: '抱狐狸體驗',
+        notes: '小心隨身物品',
+        importantNotes: '⚠️ 門口大陡坡結冰嚴重！建議改走「國道4號→白石市區→縣道254號」上山，坡度較緩。進停車場時速降至5km/h以下，避免煞車打滑。',
+        lat: 38.04,
+        lng: 140.53,
+        type: 'sightseeing'
+      },
+      {
+        id: '3-3',
+        day: 3,
+        time: '12:00',
+        location: '東北自動車道',
+        activity: '移動',
+        notes: '往南行駛',
+        lat: 37.8,
+        lng: 140.4,
+        type: 'transport'
+      },
+      {
+        id: '3-4',
+        day: 3,
+        time: '14:00',
+        location: '豬苗代湖 (長濱)',
+        activity: '賞天鵝',
+        notes: '西伯利亞飛來的天鵝與野鴨',
+        importantNotes: '⚠️ 此區有「地吹雪」風險，可能造成白化現象(Whiteout)能見度0公尺。遇白化請勿急煞，開雙黃燈與霧燈慢速前進。風雪過大建議放棄湖邊行程直接前往飯店。',
+        lat: 37.52,
+        lng: 140.08,
+        type: 'sightseeing'
+      },
+      {
+        id: '3-5',
         day: 3,
         time: '16:30',
-        location: '西鐵 Inn 新宿',
-        activity: 'Check-in & 停車',
-        notes: '1. 下行李 2. 停好車 3. 休息',
-        lat: 35.694,
-        lng: 139.695,
+        location: '磐梯熱海溫泉 華之湯',
+        activity: 'Check-in',
+        notes: '30種浴池溫泉迷宮',
+        lat: 37.48,
+        lng: 140.27,
         type: 'stay',
         booking: {
           provider: 'Official Site',
-          number: '09MQGKHC',
-          price: '42,200円',
+          number: '09MCJ60H',
+          price: '99,900円',
           payment: '現地での支払い',
           status: 'ゴールド (Gold)',
-          people: 2,
-          period: '2026/01/22 - 2026/01/24'
+          people: 4,
+          period: '2026/02/09 - 2026/02/10'
         }
-      },
-      { id: '3-9', day: 3, time: '17:30', location: '東京都廳 南展望室', activity: '賞夜景', notes: '免費夜景 (走路 10 分鐘)', lat: 35.689, lng: 139.691, type: 'sightseeing' },
-      { id: '3-10', day: 3, time: '18:30', location: '牛舌の檸檬', activity: '晚餐', notes: '記得預約！極厚切牛舌', lat: 35.693, lng: 139.698, type: 'food' },
-      { id: '3-11', day: 3, time: '20:00', location: '回憶橫丁', activity: '夜生活', notes: '昭和風情紅燈籠窄巷', lat: 35.693, lng: 139.699, type: 'sightseeing' },
-      { id: '3-12', day: 3, time: '20:30', location: '歌舞伎町', activity: '夜生活', notes: '哥吉拉飯店、唐吉訶德', lat: 35.694, lng: 139.702, type: 'sightseeing' },
-      { id: '3-13', day: 3, time: '21:30', location: '西鐵 Inn 新宿', activity: '休息', notes: '步行回飯店', lat: 35.694, lng: 139.695, type: 'stay' }
+      }
     ]
   },
   {
     day: 4,
-    date: '2026/01/23 (五)',
-    title: '強運、行軍與頂級牛排',
+    date: '2026/02/10 (二)',
+    title: '威士忌與Outlets購物',
     color: '#a855f7', // Purple
     events: [
-      { id: '4-0', day: 4, time: '07:30', location: '西鐵 Inn 新宿', activity: '飯店出發', notes: '先去伊勢丹排隊', lat: 35.694, lng: 139.695, type: 'stay' },
-      { id: '4-1', day: 4, time: '09:30', location: '伊勢丹百貨 新宿店 B1', activity: '排隊買費南雪', notes: 'noix de beurre 10:00開門前到！', details: '10:00 開門前就要到排隊，這家很熱門！\n\n📍 位置：伊勢丹百貨 新宿店 (Isetan Shinjuku) 的 B1 地下街\n\n🧁 目標：「noix de beurre (ノワ・ドゥ・ブール)」的費南雪 (Financier)\n\n⚠️ 注意：店家非常熱門，建議開店前就去排隊', lat: 35.691, lng: 139.704, type: 'shopping' },
-      { id: '4-2', day: 4, time: '10:30', location: '築地場外市場', activity: 'Brunch', notes: '海鮮大賞', lat: 35.665, lng: 139.771, type: 'food' },
-      { id: '4-3', day: 4, time: '11:30', location: '小網神社', activity: '參拜', notes: '強運厄除、洗錢', lat: 35.685, lng: 139.777, type: 'sightseeing' },
-      { id: '4-4', day: 4, time: '12:30', location: '銀座 炸豬排 檍', activity: '午餐', notes: '極上炸豬排', lat: 35.669, lng: 139.761, type: 'food' },
-      { id: '4-5', day: 4, time: '13:30', location: 'SHIBUYA SKY', activity: '賞夕陽夜景', notes: '澀谷之巔', lat: 35.658, lng: 139.702, type: 'sightseeing' },
-      { id: '4-6', day: 4, time: '14:00', location: '皇居二重橋', activity: '散步', notes: '皇室氣派', lat: 35.679, lng: 139.758, type: 'sightseeing' },
-      { id: '4-7', day: 4, time: '15:30', location: '宮下公園', activity: '散步/咖啡', notes: '澀谷新地標星巴克', lat: 35.662, lng: 139.702, type: 'sightseeing' },
-      { id: '4-8', day: 4, time: '18:00', location: 'AND THE FRIET', activity: '點心', notes: '澀谷 Hikarie B2F', lat: 35.658, lng: 139.703, type: 'food' },
-      { id: '4-9', day: 4, time: '18:30', location: 'Peter Luger Steakhouse', activity: '頂級晚餐', notes: '惠比壽分店', lat: 35.643, lng: 139.715, type: 'food' },
-      { id: '4-10', day: 4, time: '21:00', location: '西鐵 Inn 新宿', activity: '住宿', notes: '返回住宿', lat: 35.694, lng: 139.695, type: 'stay' }
+      {
+        id: '4-1',
+        day: 4,
+        time: '09:00',
+        location: '華之湯',
+        activity: '出發',
+        notes: '北上前往仙台作並',
+        lat: 37.48,
+        lng: 140.27,
+        type: 'stay'
+      },
+      {
+        id: '4-2',
+        day: 4,
+        time: '11:00',
+        location: 'Nikka 威士忌宮城峽蒸溜所',
+        activity: '參觀',
+        notes: '威士忌試飲',
+        lat: 38.3,
+        lng: 140.65,
+        type: 'sightseeing'
+      },
+      {
+        id: '4-3',
+        day: 4,
+        time: '12:30',
+        location: '仙台泉 Premium Outlets',
+        activity: '午餐 & 購物',
+        notes: '好逛好買',
+        lat: 38.34,
+        lng: 140.83,
+        type: 'shopping'
+      },
+      {
+        id: '4-4',
+        day: 4,
+        time: '15:30',
+        location: '作並溫泉 一之坊',
+        activity: 'Check-in',
+        notes: '全包式 Order Buffet',
+        lat: 38.31,
+        lng: 140.62,
+        type: 'stay',
+        booking: {
+          provider: 'Official Site',
+          number: '09MCKVCF',
+          price: '150,400円',
+          payment: '現地での支払い',
+          status: 'ゴールド (Gold)',
+          people: 4,
+          period: '2026/02/10 - 2026/02/11'
+        }
+      }
     ]
   },
   {
     day: 5,
-    date: '2026/01/24 (六)',
-    title: '雙龍鳥居、巴西烤肉與返台',
+    date: '2026/02/11 (三)',
+    title: '世界遺產中尊寺與暖桌遊船',
     color: '#f97316', // Orange
     events: [
-      { id: '5-0', day: 5, time: '07:45', location: '西鐵 Inn 新宿', activity: '提早退房/出發', notes: '行李全上車，把時間留給西邊的神社', lat: 35.694, lng: 139.695, type: 'stay' },
-      { id: '5-1', day: 5, time: '08:15', location: '馬橋稻荷神社', activity: '必去！雙龍鳥居', notes: '東京三鳥居之一，觸摸昇龍祈求運勢高升', lat: 35.7076, lng: 139.6297, type: 'sightseeing' },
-      { id: '5-2', day: 5, time: '09:30', location: '皆中稻荷神社', activity: '百發百中/偏財', notes: '新宿大久保，求偏財運御守', lat: 35.7006, lng: 139.6987, type: 'sightseeing' },
-      { id: '5-3', day: 5, time: '10:30', location: '前往六本木', activity: '自駕移動', notes: '停六本木之丘 P1 或 P2 停車場', lat: 35.660, lng: 139.731, type: 'transport' },
-      { id: '5-4', day: 5, time: '11:30', location: 'Barbacoa 六本木之丘店', activity: '午餐/準時入場', notes: 'Google 4.6分，West Walk 5F，無限巴西烤肉', lat: 35.6604, lng: 139.7292, type: 'food' },
-      { id: '5-5', day: 5, time: '13:30', location: '出發往成田', activity: '關鍵移動', notes: '吃飽後直接從六本木上高速公路', lat: 35.660, lng: 139.731, type: 'transport' },
-      { id: '5-6', day: 5, time: '15:00', location: '成田山 新勝寺', activity: '最後的郊區散步', notes: '去出世稻荷求事業財運，成田山公園適合散步', lat: 35.7847, lng: 140.3183, type: 'sightseeing' },
-      { id: '5-7', day: 5, time: '17:00', location: '永旺夢樂城成田', activity: '備案/最後補給', notes: 'Aeon Mall，上飛機前買零食、加滿油', lat: 35.7727, lng: 140.3586, type: 'shopping' },
-      { id: '5-8', day: 5, time: '17:40', location: '成田機場附近加油站', activity: '加油', notes: '日本還車規定要滿油還車', lat: 35.775, lng: 140.385, type: 'transport' },
-      { id: '5-9', day: 5, time: '18:00', location: 'ORIX 租車成田機場店', activity: '還車', notes: '辦理還車手續，接駁車送至航廈', lat: 35.772, lng: 140.392, type: 'transport' },
       {
-        id: '5-10',
+        id: '5-1',
         day: 5,
-        time: '20:20',
-        location: '成田機場 (NRT)',
-        activity: '搭機返台',
-        notes: '第一航廈 BR195',
-        lat: 35.772,
-        lng: 140.392,
-        type: 'flight',
-        flight: {
-          airline: 'EVA AIR 長榮航空',
-          flightNumber: 'BR195',
-          departureTime: '20:20',
-          arrivalTime: '23:25',
-          departureAirport: 'NRT 東京成田',
-          arrivalAirport: 'TPE 台北桃園',
-          terminal: '第一航廈',
-          class: 'Q / 經濟艙',
-          baggage: '2PC',
-          status: 'OK',
-          duration: '04:05'
+        time: '09:00',
+        location: '作並溫泉 一之坊',
+        activity: '出發',
+        notes: '前往岩手縣',
+        lat: 38.31,
+        lng: 140.62,
+        type: 'stay'
+      },
+      {
+        id: '5-2',
+        day: 5,
+        time: '11:30',
+        location: '中尊寺 (金色堂)',
+        activity: '世界遺產',
+        notes: '平安時代佛教淨土',
+        importantNotes: '⚠️ 月見坂陡坡冬天非常滑！有長輩同行請勿勉強走全程，可詢問是否能開車至本堂停車場。務必準備防滑鞋套/冰爪給全家人穿上。',
+        lat: 39.002,
+        lng: 141.1,
+        type: 'sightseeing'
+      },
+      {
+        id: '5-3',
+        day: 5,
+        time: '13:00',
+        location: '猊鼻溪',
+        activity: '暖桌遊船',
+        notes: '聽船夫唱民謠',
+        lat: 38.99,
+        lng: 141.25,
+        type: 'sightseeing'
+      },
+      {
+        id: '5-4',
+        day: 5,
+        time: '16:00',
+        location: '湯之杜 志戶平',
+        activity: 'Check-in',
+        notes: '家庭自助餐',
+        lat: 39.42,
+        lng: 141.08,
+        type: 'stay',
+        booking: {
+          provider: 'Official Site',
+          number: '09MCR7HK',
+          price: '94,608円',
+          payment: '現地での支払い',
+          status: 'ゴールド (Gold)',
+          people: 4,
+          period: '2026/02/11 - 2026/02/12'
         }
       }
     ]
+  },
+  {
+    day: 6,
+    date: '2026/02/12 (四)',
+    title: '銀山溫泉大正浪漫',
+    color: '#ec4899', // Pink
+    events: [
+      {
+        id: '6-1',
+        day: 6,
+        time: '09:00',
+        location: '湯之杜 志戶平',
+        activity: '出發',
+        notes: '南下前往銀山',
+        lat: 39.42,
+        lng: 141.08,
+        type: 'stay'
+      },
+      {
+        id: '6-2',
+        day: 6,
+        time: '12:00',
+        location: '銀山溫泉',
+        activity: '大正浪漫散策',
+        notes: '接駁車進入，拍照',
+        importantNotes: '⚠️ 前往鳴子溫泉時，導航若顯示「國道347號(鍋越峠)」較快請無視！該路山路狹窄、積雪極深、易遇雪崩。請走「國道13號」往北→接「國道47號」往東。',
+        lat: 38.57,
+        lng: 140.53,
+        type: 'sightseeing'
+      },
+      {
+        id: '6-3',
+        day: 6,
+        time: '15:00',
+        location: '鳴子溫泉 湯元 吉祥',
+        activity: 'Check-in',
+        notes: '硫磺泉與美味自助餐',
+        lat: 38.74,
+        lng: 140.71,
+        type: 'stay',
+        booking: {
+          provider: 'Official Site',
+          number: '09ME28RN',
+          price: '88,000円',
+          payment: '現地での支払い',
+          status: 'ゴールド (Gold)',
+          people: 4,
+          period: '2026/02/12 - 2026/02/13'
+        }
+      }
+    ]
+  },
+  {
+    day: 7,
+    date: '2026/02/13 (五)',
+    title: '秋保大瀑布與名湯',
+    color: '#14b8a6', // Teal
+    events: [
+      {
+        id: '7-1',
+        day: 7,
+        time: '10:00',
+        location: '鳴子溫泉',
+        activity: '出發',
+        notes: '前往秋保',
+        importantNotes: '⚠️ 避開「國道108號(鬼首峠)」！豪雪地帶路面凍結、髮夾彎多。請走國道47號往東→國道4號往南。',
+        lat: 38.74,
+        lng: 140.71,
+        type: 'stay'
+      },
+      {
+        id: '7-2',
+        day: 7,
+        time: '13:00',
+        location: '秋保大瀑布',
+        activity: '觀瀑',
+        notes: '日本三大名瀑',
+        importantNotes: '⚠️ 停車場到瀑布底的樓梯冬天結冰嚴重如溜滑梯，每年都有遊客滑倒骨折！建議只在上方「瀧見台」展望台欣賞，千萬不要走下溪谷底部。',
+        lat: 38.27,
+        lng: 140.6,
+        type: 'sightseeing'
+      },
+      {
+        id: '7-3',
+        day: 7,
+        time: '14:00',
+        location: '秋保溫泉 瑞鳳',
+        activity: 'Check-in',
+        notes: '宮城縣最強自助餐',
+        lat: 38.22,
+        lng: 140.72,
+        type: 'stay',
+        booking: {
+          provider: 'Official Site',
+          number: '09ME3C3C',
+          price: '72,500円',
+          payment: '現地での支払い',
+          status: 'ゴールド (Gold)',
+          people: 4,
+          period: '2026/02/13 - 2026/02/14'
+        }
+      }
+    ]
+  },
+  {
+    day: 8,
+    date: '2026/02/14 (六)',
+    title: '鹽竈神社與松島絕景',
+    color: '#6366f1', // Indigo
+    events: [
+      {
+        id: '8-1',
+        day: 8,
+        time: '10:00',
+        location: '秋保溫泉',
+        activity: '出發',
+        notes: '前往鹽釜',
+        lat: 38.22,
+        lng: 140.72,
+        type: 'stay'
+      },
+      {
+        id: '8-2',
+        day: 8,
+        time: '11:00',
+        location: '鹽竈神社',
+        activity: '參拜',
+        notes: '欣賞海景',
+        lat: 38.32,
+        lng: 141.02,
+        type: 'sightseeing'
+      },
+      {
+        id: '8-3',
+        day: 8,
+        time: '12:30',
+        location: '鹽釜壽司名店',
+        activity: '午餐',
+        notes: '龜喜壽司 (頂級鮪魚)',
+        lat: 38.315,
+        lng: 141.025,
+        type: 'food'
+      },
+      {
+        id: '8-4',
+        day: 8,
+        time: '15:00',
+        location: '松島溫泉 一之坊',
+        activity: 'Check-in',
+        notes: '絕美海景露天風呂',
+        lat: 38.37,
+        lng: 141.06,
+        type: 'stay',
+        booking: {
+          provider: 'Official Site',
+          number: 'T1BE01C9F2FFA',
+          price: '79,200円',
+          payment: 'Prepaid',
+          status: 'Confirmed',
+          people: 2,
+          period: '2026/02/14 - 2026/02/15'
+        }
+      },
+      {
+        id: '8-5',
+        day: 8,
+        time: '15:00',
+        location: '松島溫泉 一之坊 (Room 2)',
+        activity: 'Check-in',
+        notes: '第二間房',
+        lat: 38.37,
+        lng: 141.06,
+        type: 'stay'
+      }
+    ]
+  },
+  {
+    day: 9,
+    date: '2026/02/15 (日)',
+    title: '松島日出與返台',
+    color: '#eab308', // Yellow
+    events: [
+      {
+        id: '9-1',
+        day: 9,
+        time: '06:30',
+        location: '松島溫泉 一之坊',
+        activity: '日出',
+        notes: '松島灣絕景',
+        lat: 38.37,
+        lng: 141.06,
+        type: 'sightseeing'
+      },
+      {
+        id: '9-2',
+        day: 9,
+        time: '11:00',
+        location: '松島',
+        activity: '漫遊',
+        notes: '五大堂、瑞嚴寺',
+        lat: 38.37,
+        lng: 141.06,
+        type: 'sightseeing'
+      },
+      {
+        id: '9-3',
+        day: 9,
+        time: '14:00',
+        location: '仙台機場 (SDJ)',
+        activity: '還車 & 報到',
+        notes: '星宇航空 JX863',
+        lat: 38.139,
+        lng: 140.917,
+        type: 'flight',
+        flight: {
+          airline: '星宇航空 STARLUX',
+          flightNumber: 'JX863',
+          departureTime: '17:00',
+          arrivalTime: '20:00',
+          departureAirport: 'SDJ 仙台',
+          arrivalAirport: 'TPE 台北桃園',
+          terminal: '',
+          class: '經濟艙',
+          baggage: '',
+          status: 'OK',
+          duration: '04:00'
+        }
+      }
+    ]
+  }
+];
+
+// 冬季危險/封閉路段警告
+export interface DangerousRoute {
+  id: string;
+  name: string;
+  nameJa: string;
+  status: 'closed' | 'dangerous' | 'caution';
+  description: string;
+  coordinates: [number, number][];
+  affectedDays?: number[];
+}
+
+export const DANGEROUS_ROUTES: DangerousRoute[] = [
+  {
+    id: 'eco-line',
+    name: '藏王 Eco-Line',
+    nameJa: '蔵王エコーライン',
+    status: 'closed',
+    description: '冬季全線封閉！連接宮城縣(遠刈田)與山形縣(藏王溫泉)的山頂橫貫公路。無法直接開過山頂去山形，必須原路下山。',
+    coordinates: [
+      [38.085, 140.57],  // 遠刈田溫泉
+      [38.10, 140.52],
+      [38.12, 140.47],
+      [38.14, 140.43],
+      [38.16, 140.40],   // 藏王溫泉方向
+    ],
+    affectedDays: [2]
+  },
+  {
+    id: 'route-347',
+    name: '國道 347 號 (鍋越峠)',
+    nameJa: '国道347号',
+    status: 'dangerous',
+    description: '極度危險！山路狹窄、積雪極深，Alphard寬車身會車困難，易遇雪崩倒木。銀山→鳴子請走國道13號→國道47號。',
+    coordinates: [
+      [38.60, 140.41],   // 尾花澤側
+      [38.62, 140.48],
+      [38.64, 140.55],
+      [38.66, 140.62],
+      [38.68, 140.68],   // 加美/宮城側
+    ],
+    affectedDays: [6]
+  },
+  {
+    id: 'route-108',
+    name: '國道 108 號 (鬼首峠)',
+    nameJa: '国道108号',
+    status: 'dangerous',
+    description: '危險路段！豪雪地帶，路面凍結嚴重，髮夾彎多。鳴子→秋保請走國道47號→國道4號。',
+    coordinates: [
+      [38.74, 140.71],   // 鳴子溫泉
+      [38.78, 140.65],
+      [38.82, 140.58],
+      [38.86, 140.52],
+      [38.90, 140.48],   // 鬼首方向
+    ],
+    affectedDays: [7]
+  },
+  {
+    id: 'sumikawa-road',
+    name: '縣道12號 (澄川雪樂園)',
+    nameJa: '県道12号',
+    status: 'caution',
+    description: '高風險！海拔急升，路面為壓實雪壁。建議大雪時停車遠刈田，改搭免費接駁巴士「樹冰號」。',
+    coordinates: [
+      [38.085, 140.57],  // 遠刈田溫泉
+      [38.10, 140.56],
+      [38.11, 140.55],
+      [38.125, 140.55],  // 澄川雪樂園
+    ],
+    affectedDays: [2]
   }
 ];

@@ -39,7 +39,7 @@ import {
   Trash2,
   RotateCcw
 } from 'lucide-react';
-import { ITINERARY_DATA } from './constants';
+import { ITINERARY_DATA, DANGEROUS_ROUTES } from './constants';
 import { fetchWeatherData } from './weatherService';
 import { DayPlan, TripEvent, WeatherData } from './types';
 import { saveNote, loadAllNotes, saveChecklistItem, loadAllChecklistItems, resetAllChecklistItems, saveCustomItem, loadCustomItems, deleteCustomItem, CustomChecklistItem } from './supabaseClient';
@@ -108,6 +108,7 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'map' | 'itinerary' | 'export' | 'booking' | 'flight' | 'checklist'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showWeather, setShowWeather] = useState(false);
+  const [showDangerousRoutes, setShowDangerousRoutes] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | 'all'>(1);
   const [itineraryFilter, setItineraryFilter] = useState<number | 'all'>('all');
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
@@ -449,8 +450,8 @@ const App: React.FC = () => {
         <div className="flex flex-col h-full">
           <div className="p-4 border-b flex justify-between items-center bg-slate-900 text-white">
             <div>
-              <h1 className="text-base md:text-xl font-bold">2026 東京富士山</h1>
-              <p className="text-[10px] md:text-xs text-slate-400 tracking-wide">智能行程 & 氣候分析</p>
+              <h1 className="text-base md:text-xl font-bold">2026 東北雪見・溫泉大縱走</h1>
+              <p className="text-[10px] md:text-xs text-slate-400 tracking-wide">9天8夜 智能行程 & 氣候分析</p>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="md:hidden p-1 hover:bg-slate-800 rounded">
               <X size={20} />
@@ -683,6 +684,13 @@ const App: React.FC = () => {
             </div>
           </div>
           <button
+            onClick={() => setShowDangerousRoutes(!showDangerousRoutes)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-bold transition-all shadow-sm shrink-0 ${showDangerousRoutes ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+          >
+            <AlertTriangle size={16} />
+            <span className="hidden sm:inline">危險路段</span>
+          </button>
+          <button
             onClick={() => setShowWeather(!showWeather)}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-bold transition-all shadow-sm shrink-0 ${showWeather ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
           >
@@ -872,7 +880,105 @@ const App: React.FC = () => {
                     />
                   </React.Fragment>
                 )}
+
+                {/* Dangerous Routes Warning Polylines */}
+                {showDangerousRoutes && DANGEROUS_ROUTES.map(route => {
+                  // Only show routes relevant to selected day, or all routes when viewing all days
+                  const isRelevant = selectedDay === 'all' || (route.affectedDays && route.affectedDays.includes(selectedDay as number));
+                  if (!isRelevant) return null;
+
+                  const routeColor = route.status === 'closed' ? '#dc2626' : route.status === 'dangerous' ? '#f97316' : '#eab308';
+                  const dashArray = route.status === 'closed' ? '5, 10' : '15, 10';
+
+                  return (
+                    <React.Fragment key={route.id}>
+                      <Polyline
+                        positions={route.coordinates}
+                        pathOptions={{
+                          color: routeColor,
+                          weight: 6,
+                          opacity: 0.8,
+                          dashArray: dashArray
+                        }}
+                      />
+                      <Marker
+                        position={route.coordinates[Math.floor(route.coordinates.length / 2)]}
+                        icon={new L.DivIcon({
+                          html: `<div style="
+                            background: ${routeColor};
+                            width: 28px;
+                            height: 28px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                          ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                              <path d="M12 9v4"/>
+                              <path d="M12 17h.01"/>
+                            </svg>
+                          </div>`,
+                          className: '',
+                          iconSize: [28, 28],
+                          iconAnchor: [14, 14]
+                        })}
+                      >
+                        <Popup>
+                          <div className="p-4 min-w-[260px]">
+                            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
+                              <span className={`h-8 w-8 rounded-full flex items-center justify-center text-white shadow-sm ${route.status === 'closed' ? 'bg-red-600' : route.status === 'dangerous' ? 'bg-orange-500' : 'bg-yellow-500'}`}>
+                                <AlertTriangle size={16} />
+                              </span>
+                              <div className="flex flex-col">
+                                <span className={`text-[10px] font-bold uppercase leading-none mb-0.5 ${route.status === 'closed' ? 'text-red-600' : route.status === 'dangerous' ? 'text-orange-500' : 'text-yellow-600'}`}>
+                                  {route.status === 'closed' ? '🚫 冬季封閉' : route.status === 'dangerous' ? '⚠️ 極度危險' : '⚡ 注意安全'}
+                                </span>
+                                <span className="text-sm font-bold text-slate-700 leading-none">{route.name}</span>
+                              </div>
+                            </div>
+                            <p className="text-xs text-slate-500 mb-2">{route.nameJa}</p>
+                            <div className="bg-red-50 border border-red-100 rounded-xl p-3 mb-3">
+                              <p className="text-xs text-slate-700 leading-relaxed">{route.description}</p>
+                            </div>
+                            {route.affectedDays && (
+                              <div className="text-[10px] text-slate-400">
+                                影響日期：Day {route.affectedDays.join(', Day ')}
+                              </div>
+                            )}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    </React.Fragment>
+                  );
+                })}
               </MapContainer>
+
+              {/* Dangerous Routes Legend */}
+              {showDangerousRoutes && (
+                <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all">
+                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
+                    <AlertTriangle className="text-red-500" size={14} />
+                    <span className="text-xs font-bold text-slate-700">冬季危險路段圖例</span>
+                  </div>
+                  <div className="space-y-1.5 text-[10px]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-1 bg-red-600 rounded" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #dc2626 0, #dc2626 5px, transparent 5px, transparent 10px)' }}></div>
+                      <span className="text-slate-600">🚫 冬季封閉</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-1 bg-orange-500 rounded" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #f97316 0, #f97316 10px, transparent 10px, transparent 15px)' }}></div>
+                      <span className="text-slate-600">⚠️ 極度危險</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-1 bg-yellow-500 rounded" style={{ backgroundImage: 'repeating-linear-gradient(90deg, #eab308 0, #eab308 10px, transparent 10px, transparent 15px)' }}></div>
+                      <span className="text-slate-600">⚡ 注意安全</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Weather Forecast Overlay Widget */}
               {showWeather && (
