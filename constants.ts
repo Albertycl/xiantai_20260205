@@ -135,10 +135,12 @@ export const ITINERARY_DATA: DayPlan[] = [
       {
         id: '3-1',
         day: 3,
-        time: '09:30',
+        time: '09:00',
         location: 'ゆと森倶楽部',
         activity: '出發',
-        notes: '前往狐狸村',
+        notes: '⚠️ 勿走導航捷徑（縣道12→51號）！冬季結冰陡坡極危險',
+        importantNotes: '🚗 安全路線：國道4號→白石市區→縣道254號（約50分鐘）。254號是狐狸村巴士路線，除雪頻率高、坡度緩。',
+        travelTime: '50分',
         lat: 38.09,
         lng: 140.56,
         type: 'stay'
@@ -149,8 +151,8 @@ export const ITINERARY_DATA: DayPlan[] = [
         time: '10:00',
         location: '藏王狐狸村',
         activity: '抱狐狸體驗',
-        notes: '小心隨身物品',
-        importantNotes: '⚠️ 門口大陡坡結冰嚴重！建議改走「國道4號→白石市區→縣道254號」上山，坡度較緩。進停車場時速降至5km/h以下，避免煞車打滑。',
+        notes: '小心隨身物品，勿攜帶閃亮飾品',
+        importantNotes: '⚠️ 停車場是大斜坡！進場前減速至5km/h以下。Alphard重2.2噸，結冰路面慣性大，煞車距離長。',
         lat: 38.04,
         lng: 140.53,
         type: 'sightseeing'
