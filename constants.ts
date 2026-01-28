@@ -73,25 +73,35 @@ export const ITINERARY_DATA: DayPlan[] = [
       {
         id: '2-2',
         day: 2,
-        time: '11:00',
-        location: '宮城藏王澄川雪樂園',
-        activity: '抵達 & 報到',
-        notes: '11:30發車，需提前30分鐘到。到 slope house 報到（DX車輛）',
-        importantNotes: '⚠️ 風險等級最高！縣道12號海拔急升，路面為壓實雪壁。建議大雪時將車停在「遠刈田溫泉」停車場，改搭免費接駁巴士「樹冰號」上下山。藏王Eco-Line冬季全線封閉，無法直接開往山形。',
-        lat: 38.125,
-        lng: 140.55,
-        type: 'sightseeing'
+        time: '10:20',
+        location: 'ZAOBOO（蔵王ベースセンター）',
+        activity: '停車 & 搭接駁車',
+        notes: '停好車後搭 10:25 接駁車上山',
+        travelTime: '30分',
+        lat: 38.0938,
+        lng: 140.5488,
+        type: 'transport'
       },
       {
         id: '2-3',
         day: 2,
+        time: '10:55',
+        location: '宮城藏王澄川雪樂園',
+        activity: '抵達 & 報到',
+        notes: 'DX車輛到 slope house 報到。穿厚外套、毛帽、手套、雪靴（可現場借）。先上廁所！',
+        lat: 38.135143,
+        lng: 140.494848,
+        type: 'sightseeing'
+      },
+      {
+        id: '2-4',
+        day: 2,
         time: '11:30',
         location: '雪怪車 (Wild Monster)',
         activity: '樹冰巡禮',
-        notes: '自駕請11:00前到達（提前30分）。DX車輛到 slope house 報到。穿厚外套、毛帽、手套、雪靴（可現場借）。出發前先上廁所！',
-        importantNotes: '⚠️ 上車時告知司機姓名「Liu」',
-        lat: 38.125,
-        lng: 140.55,
+        notes: '上車時告知司機姓名「Liu」',
+        lat: 38.135143,
+        lng: 140.494848,
         type: 'sightseeing',
         booking: {
           provider: '樹冰予約',
@@ -103,9 +113,21 @@ export const ITINERARY_DATA: DayPlan[] = [
         }
       },
       {
-        id: '2-4',
+        id: '2-5',
         day: 2,
-        time: '13:00',
+        time: '14:10',
+        location: '澄川雪樂園',
+        activity: '搭接駁車下山',
+        notes: '搭 14:10 接駁車回 ZAOBOO（14:50抵達）',
+        travelTime: '40分',
+        lat: 38.135143,
+        lng: 140.494848,
+        type: 'transport'
+      },
+      {
+        id: '2-6',
+        day: 2,
+        time: '15:00',
         location: '遠刈田溫泉街',
         activity: '午餐',
         notes: '手工蕎麥麵或漢堡排',
@@ -114,9 +136,9 @@ export const ITINERARY_DATA: DayPlan[] = [
         type: 'food'
       },
       {
-        id: '2-5',
+        id: '2-7',
         day: 2,
-        time: '15:00',
+        time: '16:00',
         location: 'ゆと森倶楽部',
         activity: 'Check-in',
         notes: '全包式蔬菜料理 Buffet',
