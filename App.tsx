@@ -1131,9 +1131,33 @@ const App: React.FC = () => {
                 })}
               </MapContainer>
 
+              {/* Day Routes Legend - shows when viewing all days */}
+              {selectedDay === 'all' && (
+                <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all">
+                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
+                    <MapIcon className="text-slate-500" size={14} />
+                    <span className="text-xs font-bold text-slate-700">行程路線圖例</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-x-3 gap-y-1.5 text-[10px]">
+                    {ITINERARY_DATA.map(day => (
+                      <div key={`legend-${day.day}`} className="flex items-center gap-1.5">
+                        <div
+                          className="w-6 h-1 rounded"
+                          style={{
+                            backgroundColor: day.color,
+                            backgroundImage: `repeating-linear-gradient(90deg, ${day.color} 0, ${day.color} 6px, transparent 6px, transparent 10px)`
+                          }}
+                        ></div>
+                        <span className="text-slate-600 font-medium">D{day.day}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Dangerous Routes Legend */}
               {showDangerousRoutes && (
-                <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all">
+                <div className={`absolute ${selectedDay === 'all' ? 'bottom-24' : 'bottom-4'} left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all`}>
                   <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                     <AlertTriangle className="text-red-500" size={14} />
                     <span className="text-xs font-bold text-slate-700">冬季危險路段圖例</span>
