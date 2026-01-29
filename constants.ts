@@ -125,17 +125,6 @@ export const ITINERARY_DATA: DayPlan[] = [
         type: 'transport'
       },
       {
-        id: '2-6',
-        day: 2,
-        time: '15:00',
-        location: '遠刈田溫泉街',
-        activity: '午餐',
-        notes: '手工蕎麥麵或漢堡排',
-        lat: 38.085,
-        lng: 140.57,
-        type: 'food'
-      },
-      {
         id: '2-7',
         day: 2,
         time: '16:00',
@@ -236,16 +225,16 @@ export const ITINERARY_DATA: DayPlan[] = [
   {
     day: 4,
     date: '2026/02/10 (二)',
-    title: '威士忌與Outlets購物',
+    title: '神社巡禮、山寺與作並溫泉',
     color: '#a855f7', // Purple
     events: [
       {
         id: '4-1',
         day: 4,
-        time: '09:00',
+        time: '08:30',
         location: '華之湯',
         activity: '出發',
-        notes: '北上前往仙台作並',
+        notes: '提早出發，北上前往岩沼',
         lat: 37.48,
         lng: 140.27,
         type: 'stay'
@@ -253,32 +242,54 @@ export const ITINERARY_DATA: DayPlan[] = [
       {
         id: '4-2',
         day: 4,
-        time: '11:00',
-        location: 'Nikka 威士忌宮城峽蒸溜所',
-        activity: '參觀',
-        notes: '威士忌試飲',
-        lat: 38.3,
-        lng: 140.65,
+        time: '10:00',
+        location: '金蛇水神社',
+        activity: '參拜',
+        notes: '求金運、商売繁盛的靈驗神社',
+        lat: 38.1047,
+        lng: 140.8711,
         type: 'sightseeing'
       },
       {
         id: '4-3',
         day: 4,
-        time: '12:30',
+        time: '11:00',
+        location: '鹽竈神社',
+        activity: '參拜',
+        notes: '東北鎮護、陸奧國一之宮',
+        lat: 38.32,
+        lng: 141.02,
+        type: 'sightseeing'
+      },
+      {
+        id: '4-4',
+        day: 4,
+        time: '12:00',
         location: '仙台泉 Premium Outlets',
-        activity: '午餐 & 購物',
-        notes: '好逛好買',
+        activity: '購物',
+        notes: '約80間店鋪',
         lat: 38.34,
         lng: 140.83,
         type: 'shopping'
       },
       {
-        id: '4-4',
+        id: '4-5',
+        day: 4,
+        time: '14:00',
+        location: '山寺（立石寺）',
+        activity: '參拜',
+        notes: '1015階石階登山，下午光線尚可',
+        lat: 38.3127,
+        lng: 140.4383,
+        type: 'sightseeing'
+      },
+      {
+        id: '4-6',
         day: 4,
         time: '15:30',
         location: '作並溫泉 一之坊',
         activity: 'Check-in',
-        notes: '全包式 Order Buffet',
+        notes: '全包式 Order Buffet，早早入住享受設施',
         lat: 38.31,
         lng: 140.62,
         type: 'stay',
@@ -535,17 +546,6 @@ export const ITINERARY_DATA: DayPlan[] = [
         lat: 38.32,
         lng: 141.02,
         type: 'sightseeing'
-      },
-      {
-        id: '8-3',
-        day: 8,
-        time: '12:30',
-        location: '鹽釜壽司名店',
-        activity: '午餐',
-        notes: '龜喜壽司 (頂級鮪魚)',
-        lat: 38.315,
-        lng: 141.025,
-        type: 'food'
       },
       {
         id: '8-4',
