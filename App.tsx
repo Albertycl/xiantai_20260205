@@ -882,7 +882,7 @@ const App: React.FC = () => {
           {activeTab === 'map' && (
             <>
               {/* Day Selector Bar inside Map Area */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[500] bg-white/90 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-white/50 flex gap-1">
+              <div className="absolute top-4 left-2 right-2 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[500] bg-white/90 backdrop-blur-md px-2 py-1.5 rounded-2xl shadow-xl border border-white/50 flex gap-1 overflow-x-auto scrollbar-hide">
                 <button
                   onClick={() => setSelectedDay('all')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center ${selectedDay === 'all' ? 'text-white shadow-lg scale-105 bg-slate-700' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
