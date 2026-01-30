@@ -49,15 +49,15 @@ import { PACKING_CHECKLIST, ChecklistCategory } from './checklistData';
 // Initial empty state or loading state could be handled, but for now we start empty
 
 
-const createCustomIcon = (color: string, index: number) => {
+const createCustomIcon = (color: string, index: number, opacity: number = 1) => {
   return new L.DivIcon({
     html: `
       <div style="
-        background-color: ${color}; 
-        width: 26px; 
-        height: 26px; 
-        border: 2px solid white; 
-        border-radius: 50%; 
+        background-color: ${color};
+        width: 26px;
+        height: 26px;
+        border: 2px solid white;
+        border-radius: 50%;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
@@ -66,6 +66,8 @@ const createCustomIcon = (color: string, index: number) => {
         font-weight: 800;
         font-size: 13px;
         font-family: 'Inter', system-ui, sans-serif;
+        opacity: ${opacity};
+        transition: opacity 0.2s;
       ">
         ${index}
       </div>`,
@@ -111,6 +113,7 @@ const App: React.FC = () => {
   const [showWeather, setShowWeather] = useState(false);
   const [showDangerousRoutes, setShowDangerousRoutes] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | 'all'>(1);
+  const [hoveredLegendDay, setHoveredLegendDay] = useState<number | null>(null);
   const [itineraryFilter, setItineraryFilter] = useState<number | 'all'>('all');
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<string | null>(null);
@@ -919,12 +922,14 @@ const App: React.FC = () => {
                 `}</style>
 
                 {selectedDay === 'all' ? (
-                  ITINERARY_DATA.map(day => (
+                  ITINERARY_DATA.map(day => {
+                    const markerOpacity = hoveredLegendDay === null ? 1 : (hoveredLegendDay === day.day ? 1 : 0.25);
+                    return (
                     <React.Fragment key={`day-${day.day}`}>
                       {day.events.map((event, eventIdx) => {
                         const loc = getEventLocation(event);
                         return (
-                        <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(day.color, eventIdx + 1)}>
+                        <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(day.color, eventIdx + 1, markerOpacity)}>
                           <Popup>
                             <div className="p-4 min-w-[240px]">
                               <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
@@ -983,10 +988,44 @@ const App: React.FC = () => {
                       })}
                       <Polyline
                         positions={day.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
-                        pathOptions={{ color: day.color, weight: 4, opacity: 0.7, dashArray: '10, 10' }}
+                        pathOptions={{
+                          color: day.color,
+                          weight: hoveredLegendDay === day.day ? 6 : 4,
+                          opacity: hoveredLegendDay === null ? 0.7 : (hoveredLegendDay === day.day ? 1 : 0.15),
+                          dashArray: '10, 10'
+                        }}
                       />
+                      {/* Day Route Label - shows at midpoint of route */}
+                      {day.events.length >= 2 && (() => {
+                        const midIdx = Math.floor(day.events.length / 2);
+                        const midEvent = day.events[midIdx];
+                        const midLoc = getEventLocation(midEvent);
+                        return (
+                          <Marker
+                            position={[midLoc.lat, midLoc.lng]}
+                            icon={new L.DivIcon({
+                              html: `<div style="
+                                background: ${day.color};
+                                color: white;
+                                padding: 2px 6px;
+                                border-radius: 10px;
+                                font-size: 10px;
+                                font-weight: 800;
+                                white-space: nowrap;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                                border: 2px solid white;
+                                opacity: ${hoveredLegendDay === null ? 0.9 : (hoveredLegendDay === day.day ? 1 : 0.2)};
+                              ">D${day.day}</div>`,
+                              className: 'day-route-label',
+                              iconSize: [30, 20],
+                              iconAnchor: [15, 10]
+                            })}
+                            interactive={false}
+                          />
+                        );
+                      })()}
                     </React.Fragment>
-                  ))
+                  )})
                 ) : currentDayData && (
                   <React.Fragment>
                     {currentDayData.events.map((event, eventIdx) => {
@@ -1137,18 +1176,25 @@ const App: React.FC = () => {
                   <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                     <MapIcon className="text-slate-500" size={14} />
                     <span className="text-xs font-bold text-slate-700">行程路線圖例</span>
+                    <span className="text-[9px] text-slate-400">(懸停高亮)</span>
                   </div>
                   <div className="grid grid-cols-3 gap-x-3 gap-y-1.5 text-[10px]">
                     {ITINERARY_DATA.map(day => (
-                      <div key={`legend-${day.day}`} className="flex items-center gap-1.5">
+                      <div
+                        key={`legend-${day.day}`}
+                        className={`flex items-center gap-1.5 cursor-pointer rounded px-1 py-0.5 transition-all ${hoveredLegendDay === day.day ? 'bg-slate-100 scale-105' : 'hover:bg-slate-50'}`}
+                        onMouseEnter={() => setHoveredLegendDay(day.day)}
+                        onMouseLeave={() => setHoveredLegendDay(null)}
+                        onClick={() => setSelectedDay(day.day)}
+                      >
                         <div
-                          className="w-6 h-1 rounded"
+                          className="w-6 h-1.5 rounded"
                           style={{
                             backgroundColor: day.color,
                             backgroundImage: `repeating-linear-gradient(90deg, ${day.color} 0, ${day.color} 6px, transparent 6px, transparent 10px)`
                           }}
                         ></div>
-                        <span className="text-slate-600 font-medium">D{day.day}</span>
+                        <span className={`font-medium transition-colors ${hoveredLegendDay === day.day ? 'text-slate-800' : 'text-slate-600'}`}>D{day.day}</span>
                       </div>
                     ))}
                   </div>
