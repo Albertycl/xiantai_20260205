@@ -480,8 +480,8 @@ export const ITINERARY_DATA: DayPlan[] = [
         time: '10:00',
         location: '鳴子溫泉',
         activity: '出發',
-        notes: '前往秋保',
-        importantNotes: '⚠️ 避開「國道108號(鬼首峠)」！豪雪地帶路面凍結、髮夾彎多。請走國道47號往東→國道4號往南。',
+        notes: '前往秋保大瀑布，約1.5小時車程',
+        importantNotes: '🛣️ 108號(鬼首峠)是豪雪地帶，路面凍結、髮夾彎多，絕對不要走！\n\n✅ 正確路線：鳴子→國道47號【往東】→古川→國道4號【往南】→秋保大瀑布。導航經由點設「古川駅」。',
         lat: 38.74,
         lng: 140.71,
         type: 'stay'
