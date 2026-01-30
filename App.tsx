@@ -1180,7 +1180,7 @@ const App: React.FC = () => {
               {/* Day Routes Legend - shows when viewing all days (moved to right side) */}
               {selectedDay === 'all' && (
                 <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-2 transition-all">
-                  <div className="text-[9px] text-slate-400 mb-1.5 text-center">懸停高亮路線</div>
+                  <div className="text-[9px] text-slate-400 mb-1.5 text-center">點擊高亮路線</div>
                   <div className="flex flex-wrap gap-1 max-w-[180px] justify-center">
                     {ITINERARY_DATA.map(day => (
                       <div
@@ -1189,7 +1189,15 @@ const App: React.FC = () => {
                         style={{ backgroundColor: day.color }}
                         onMouseEnter={() => setHoveredLegendDay(day.day)}
                         onMouseLeave={() => setHoveredLegendDay(null)}
-                        onClick={() => setSelectedDay(day.day)}
+                        onClick={() => {
+                          // Toggle highlight on click (for mobile)
+                          if (hoveredLegendDay === day.day) {
+                            setHoveredLegendDay(null);
+                          } else {
+                            setHoveredLegendDay(day.day);
+                          }
+                        }}
+                        onDoubleClick={() => setSelectedDay(day.day)}
                       >
                         <span className="text-white font-bold text-[10px]">{day.day}</span>
                       </div>
