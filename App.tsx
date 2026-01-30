@@ -1170,31 +1170,21 @@ const App: React.FC = () => {
                 })}
               </MapContainer>
 
-              {/* Day Routes Legend - shows when viewing all days */}
+              {/* Day Routes Legend - shows when viewing all days (moved to right side) */}
               {selectedDay === 'all' && (
-                <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all">
-                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
-                    <MapIcon className="text-slate-500" size={14} />
-                    <span className="text-xs font-bold text-slate-700">行程路線圖例</span>
-                    <span className="text-[9px] text-slate-400">(懸停高亮)</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-x-3 gap-y-1.5 text-[10px]">
+                <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-2 transition-all">
+                  <div className="text-[9px] text-slate-400 mb-1.5 text-center">懸停高亮路線</div>
+                  <div className="flex flex-wrap gap-1 max-w-[180px] justify-center">
                     {ITINERARY_DATA.map(day => (
                       <div
                         key={`legend-${day.day}`}
-                        className={`flex items-center gap-1.5 cursor-pointer rounded px-1 py-0.5 transition-all ${hoveredLegendDay === day.day ? 'bg-slate-100 scale-105' : 'hover:bg-slate-50'}`}
+                        className={`flex items-center justify-center cursor-pointer rounded-full w-7 h-7 transition-all ${hoveredLegendDay === day.day ? 'scale-125 ring-2 ring-white shadow-lg' : 'hover:scale-110'}`}
+                        style={{ backgroundColor: day.color }}
                         onMouseEnter={() => setHoveredLegendDay(day.day)}
                         onMouseLeave={() => setHoveredLegendDay(null)}
                         onClick={() => setSelectedDay(day.day)}
                       >
-                        <div
-                          className="w-6 h-1.5 rounded"
-                          style={{
-                            backgroundColor: day.color,
-                            backgroundImage: `repeating-linear-gradient(90deg, ${day.color} 0, ${day.color} 6px, transparent 6px, transparent 10px)`
-                          }}
-                        ></div>
-                        <span className={`font-medium transition-colors ${hoveredLegendDay === day.day ? 'text-slate-800' : 'text-slate-600'}`}>D{day.day}</span>
+                        <span className="text-white font-bold text-[10px]">{day.day}</span>
                       </div>
                     ))}
                   </div>
@@ -1203,7 +1193,7 @@ const App: React.FC = () => {
 
               {/* Dangerous Routes Legend */}
               {showDangerousRoutes && (
-                <div className={`absolute ${selectedDay === 'all' ? 'bottom-24' : 'bottom-4'} left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all`}>
+                <div className="absolute bottom-4 left-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-3 transition-all">
                   <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                     <AlertTriangle className="text-red-500" size={14} />
                     <span className="text-xs font-bold text-slate-700">冬季危險路段圖例</span>
