@@ -475,8 +475,15 @@ const App: React.FC = () => {
   // Update map bounds when day changes if not already focused on a specific point
   useEffect(() => {
     if (selectedDay === 'all') {
-      // Center on Tokyo area with lower zoom to see all locations
-      setMapConfig({ center: [35.5, 139.2], zoom: 8 });
+      // Calculate center of all events to center the map properly
+      const allEvents = ITINERARY_DATA.flatMap(day => day.events);
+      if (allEvents.length > 0) {
+        const lats = allEvents.map(e => getEventLocation(e).lat);
+        const lngs = allEvents.map(e => getEventLocation(e).lng);
+        const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+        const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+        setMapConfig({ center: [centerLat, centerLng], zoom: 7 });
+      }
     } else if (currentDayData && currentDayData.events.length > 0) {
       const firstEvent = currentDayData.events[0];
       setMapConfig({ center: [firstEvent.lat, firstEvent.lng], zoom: 11 });
