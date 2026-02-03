@@ -607,7 +607,7 @@ const App: React.FC = () => {
                         <div className="flex items-start">
                           <button
                             onClick={() => handleFocusLocation(event)}
-                            className="flex-1 p-2 md:p-3 text-left hover:bg-slate-50 flex gap-2 md:gap-3 transition-colors items-start pr-1 md:pr-2"
+                            className="flex-1 min-w-0 p-2 md:p-3 text-left hover:bg-slate-50 flex gap-2 md:gap-3 transition-colors items-start pr-1 md:pr-2"
                           >
                             <div className="flex flex-col items-center min-w-[28px] md:min-w-[32px]">
                               <span className="text-[10px] md:text-[11px] font-bold h-5 w-5 md:h-6 md:w-6 rounded-full flex items-center justify-center border text-white mb-1 shadow-sm" style={{ backgroundColor: day.color, borderColor: 'white' }}>
