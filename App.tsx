@@ -484,9 +484,6 @@ const App: React.FC = () => {
         const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
         setMapConfig({ center: [centerLat, centerLng], zoom: 7 });
       }
-    } else if (currentDayData && currentDayData.events.length > 0) {
-      const firstEvent = currentDayData.events[0];
-      setMapConfig({ center: [firstEvent.lat, firstEvent.lng], zoom: 11 });
     }
   }, [selectedDay, currentDayData]);
 
