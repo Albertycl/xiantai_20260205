@@ -119,7 +119,7 @@ const App: React.FC = () => {
   const [itineraryFilter, setItineraryFilter] = useState<number | 'all'>('all');
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set(ITINERARY_DATA.map(d => d.day)));
   const [sidebarExpandedDays, setSidebarExpandedDays] = useState<Set<number>>(new Set(ITINERARY_DATA.map(d => d.day)));
-  const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
   const [editingEvent, setEditingEvent] = useState<string | null>(null);
   const [eventDetails, setEventDetails] = useState<Record<string, string>>({});
   const [savingNote, setSavingNote] = useState<string | null>(null);
@@ -547,7 +547,7 @@ const App: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-100 border-b">
+          <div className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-100 border-b flex-wrap">
             <button
               onClick={() => setSidebarExpandedDays(new Set(ITINERARY_DATA.map(d => d.day)))}
               className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${sidebarExpandedDays.size === ITINERARY_DATA.length ? 'bg-slate-700 text-white' : 'bg-white text-slate-500 hover:bg-slate-200 border border-slate-200'}`}
@@ -556,11 +556,29 @@ const App: React.FC = () => {
               展開全部
             </button>
             <button
-              onClick={() => setSidebarExpandedDays(new Set())}
+              onClick={() => { setSidebarExpandedDays(new Set()); setExpandedEvents(new Set()); }}
               className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${sidebarExpandedDays.size === 0 ? 'bg-slate-700 text-white' : 'bg-white text-slate-500 hover:bg-slate-200 border border-slate-200'}`}
             >
               <ChevronRight size={12} />
               收合全部
+            </button>
+            <span className="text-slate-300">|</span>
+            <button
+              onClick={() => {
+                setSidebarExpandedDays(new Set(ITINERARY_DATA.map(d => d.day)));
+                setExpandedEvents(new Set(ITINERARY_DATA.flatMap(d => d.events.map(e => e.id))));
+              }}
+              className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${expandedEvents.size === ITINERARY_DATA.reduce((sum, d) => sum + d.events.length, 0) ? 'bg-blue-600 text-white' : 'bg-white text-blue-500 hover:bg-blue-50 border border-blue-200'}`}
+            >
+              <ChevronDown size={12} />
+              全部明細
+            </button>
+            <button
+              onClick={() => setExpandedEvents(new Set())}
+              className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${expandedEvents.size === 0 ? 'bg-blue-600 text-white' : 'bg-white text-blue-500 hover:bg-blue-50 border border-blue-200'}`}
+            >
+              <ChevronRight size={12} />
+              收合明細
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-4 bg-slate-50">
@@ -602,6 +620,30 @@ const App: React.FC = () => {
                   </button>
                   {sidebarExpandedDays.has(day.day) && (
                   <div className="divide-y divide-slate-100">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-slate-50 border-b border-slate-100">
+                      <button
+                        onClick={() => setExpandedEvents(prev => {
+                          const next = new Set(prev);
+                          day.events.forEach(e => next.add(e.id));
+                          return next;
+                        })}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${day.events.every(e => expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
+                      >
+                        <ChevronDown size={10} />
+                        展開明細
+                      </button>
+                      <button
+                        onClick={() => setExpandedEvents(prev => {
+                          const next = new Set(prev);
+                          day.events.forEach(e => next.delete(e.id));
+                          return next;
+                        })}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${day.events.every(e => !expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
+                      >
+                        <ChevronRight size={10} />
+                        收合明細
+                      </button>
+                    </div>
                     {day.events.map((event, index) => (
                       <div key={event.id} className="group relative">
                         <div className="flex items-start">
@@ -654,12 +696,17 @@ const App: React.FC = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setExpandedEvent(expandedEvent === event.id ? null : event.id);
+                                setExpandedEvents(prev => {
+                                  const next = new Set(prev);
+                                  if (next.has(event.id)) next.delete(event.id);
+                                  else next.add(event.id);
+                                  return next;
+                                });
                               }}
-                              className={`p-1.5 rounded-lg transition-colors ${expandedEvent === event.id ? 'bg-blue-100 text-blue-600' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}
+                              className={`p-1.5 rounded-lg transition-colors ${expandedEvents.has(event.id) ? 'bg-blue-100 text-blue-600' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}
                               title="顯示詳細資訊"
                             >
-                              {expandedEvent === event.id ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                              {expandedEvents.has(event.id) ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                             </button>
                             {(() => { const loc = getEventLocation(event); return (
                             <a
@@ -675,7 +722,7 @@ const App: React.FC = () => {
                           </div>
                         </div>
                         {/* Expandable Details Section */}
-                        {expandedEvent === event.id && (
+                        {expandedEvents.has(event.id) && (
                           <div className="px-3 pb-3 pt-0 ml-[44px] mr-2 animate-in slide-in-from-top-2 duration-200">
                             <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
                               <div className="flex items-center justify-between mb-2">
