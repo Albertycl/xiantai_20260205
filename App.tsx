@@ -894,11 +894,11 @@ const App: React.FC = () => {
                   <button
                     key={`selector-${day.day}`}
                     onClick={() => setSelectedDay(day.day)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center ${selectedDay === day.day ? 'text-white shadow-lg scale-105' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                    style={selectedDay === day.day ? { backgroundColor: day.color } : {}}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex flex-col items-center ${selectedDay === day.day ? 'text-white shadow-lg scale-105' : 'text-white/80 hover:scale-105'}`}
+                    style={selectedDay === day.day ? { backgroundColor: day.color } : { backgroundColor: day.color, opacity: 0.45 }}
                   >
                     <span>Day {day.day}</span>
-                    <span className={`text-[9px] font-normal ${selectedDay === day.day ? 'opacity-80' : 'opacity-60'}`}>{day.date.split(' ')[0].replace('2026/', '')}</span>
+                    <span className={`text-[9px] font-normal ${selectedDay === day.day ? 'opacity-80' : 'opacity-70'}`}>{day.date.split(' ')[0].replace('2026/', '')}</span>
                   </button>
                 ))}
               </div>
@@ -928,9 +928,18 @@ const App: React.FC = () => {
                   }
                 `}</style>
 
-                {selectedDay === 'all' ? (
-                  ITINERARY_DATA.map(day => {
-                    const markerOpacity = hoveredLegendDay === null ? 1 : (hoveredLegendDay === day.day ? 1 : 0.25);
+                {ITINERARY_DATA.map(day => {
+                    const isDayHighlighted = selectedDay === 'all'
+                      ? (hoveredLegendDay === null || hoveredLegendDay === day.day)
+                      : selectedDay === day.day;
+                    const markerOpacity = isDayHighlighted ? 1 : 0.25;
+                    const polylineWeight = isDayHighlighted ? 6 : 4;
+                    const polylineOpacity = selectedDay === 'all'
+                      ? (hoveredLegendDay === null ? 0.7 : (isDayHighlighted ? 1 : 0.15))
+                      : (isDayHighlighted ? 0.7 : 0.15);
+                    const labelOpacity = selectedDay === 'all'
+                      ? (hoveredLegendDay === null ? 0.9 : (isDayHighlighted ? 1 : 0.2))
+                      : (isDayHighlighted ? 0.9 : 0.2);
                     return (
                     <React.Fragment key={`day-${day.day}`}>
                       {day.events.map((event, eventIdx) => {
@@ -997,8 +1006,8 @@ const App: React.FC = () => {
                         positions={day.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
                         pathOptions={{
                           color: day.color,
-                          weight: hoveredLegendDay === day.day ? 6 : 4,
-                          opacity: hoveredLegendDay === null ? 0.7 : (hoveredLegendDay === day.day ? 1 : 0.15),
+                          weight: polylineWeight,
+                          opacity: polylineOpacity,
                           dashArray: '10, 10'
                         }}
                       />
@@ -1021,7 +1030,7 @@ const App: React.FC = () => {
                                 white-space: nowrap;
                                 box-shadow: 0 2px 4px rgba(0,0,0,0.3);
                                 border: 2px solid white;
-                                opacity: ${hoveredLegendDay === null ? 0.9 : (hoveredLegendDay === day.day ? 1 : 0.2)};
+                                opacity: ${labelOpacity};
                               ">D${day.day}</div>`,
                               className: 'day-route-label',
                               iconSize: [30, 20],
@@ -1032,75 +1041,7 @@ const App: React.FC = () => {
                         );
                       })()}
                     </React.Fragment>
-                  )})
-                ) : currentDayData && (
-                  <React.Fragment>
-                    {currentDayData.events.map((event, eventIdx) => {
-                      const loc = getEventLocation(event);
-                      return (
-                      <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(currentDayData.color, eventIdx + 1)}>
-                        <Popup>
-                          <div className="p-4 min-w-[240px]">
-                            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-slate-100">
-                              <span className="h-8 w-8 rounded-full flex items-center justify-center text-xs font-black text-white shadow-sm" style={{ backgroundColor: currentDayData.color }}>{eventIdx + 1}</span>
-                              <div className="flex flex-col">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-0.5">Day {currentDayData.day}</span>
-                                <span className="text-sm font-mono font-bold text-slate-700 leading-none">{event.time}</span>
-                              </div>
-                            </div>
-                            <h3 className="font-bold text-base leading-tight text-slate-800 mb-1">{event.location}</h3>
-                            <div className="flex items-center gap-1.5 text-slate-500 mb-4">
-                              {getEventIcon(event.type)}
-                              <span className="text-xs font-medium">{event.activity}</span>
-                            </div>
-                            {event.booking && (
-                              <div className="mb-4 bg-amber-50 border border-amber-100 rounded-xl p-3">
-                                <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs mb-2">
-                                  <Ticket size={14} />
-                                  <span>預訂資訊</span>
-                                </div>
-                                <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] text-slate-600">
-                                  <div className="text-slate-400">預約編號</div>
-                                  <div className="font-mono font-bold">{event.booking.number}</div>
-                                  <div className="text-slate-400">金額</div>
-                                  <div className="font-bold">{event.booking.price}</div>
-                                </div>
-                              </div>
-                            )}
-                            {(event.notes || getEventDetails(event)) && (
-                              <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-3">
-                                <div className="flex items-center gap-1.5 text-blue-700 font-bold text-xs mb-2">
-                                  <StickyNote size={14} />
-                                  <span>筆記</span>
-                                </div>
-                                {event.notes && (
-                                  <div className="text-[11px] text-slate-600 mb-1">{event.notes}</div>
-                                )}
-                                {getEventDetails(event) && (
-                                  <div className="text-[11px] text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-blue-100 mt-2">{getEventDetails(event)}</div>
-                                )}
-                              </div>
-                            )}
-                            <a
-                              href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 w-full py-3 bg-slate-900 hover:bg-black text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:shadow-xl no-underline active:scale-95"
-                            >
-                              <MapIcon size={16} />
-                              Google 地圖開啟
-                            </a>
-                          </div>
-                        </Popup>
-                      </Marker>
-                      );
-                    })}
-                    <Polyline
-                      positions={currentDayData.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
-                      pathOptions={{ color: currentDayData.color, weight: 4, opacity: 0.7, dashArray: '10, 10' }}
-                    />
-                  </React.Fragment>
-                )}
+                  )})}
 
                 {/* Dangerous Routes Warning Polylines */}
                 {showDangerousRoutes && DANGEROUS_ROUTES.map(route => {
@@ -1178,33 +1119,34 @@ const App: React.FC = () => {
               </MapContainer>
 
               {/* Day Routes Legend - shows when viewing all days (moved to right side) */}
-              {selectedDay === 'all' && (
-                <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-2 transition-all">
+              <div className="absolute bottom-4 right-4 z-[400] bg-white/90 backdrop-blur-md rounded-xl shadow-lg border border-white/50 p-2 transition-all">
                   <div className="text-[9px] text-slate-400 mb-1.5 text-center">點擊高亮路線</div>
                   <div className="flex flex-wrap gap-1 max-w-[180px] justify-center">
-                    {ITINERARY_DATA.map(day => (
+                    {ITINERARY_DATA.map(day => {
+                      const isActive = selectedDay === 'all'
+                        ? hoveredLegendDay === day.day
+                        : selectedDay === day.day;
+                      return (
                       <div
                         key={`legend-${day.day}`}
-                        className={`flex items-center justify-center cursor-pointer rounded-full w-7 h-7 transition-all ${hoveredLegendDay === day.day ? 'scale-125 ring-2 ring-white shadow-lg' : 'hover:scale-110'}`}
-                        style={{ backgroundColor: day.color }}
+                        className={`flex items-center justify-center cursor-pointer rounded-full w-7 h-7 transition-all ${isActive ? 'scale-125 ring-2 ring-white shadow-lg' : 'hover:scale-110'}`}
+                        style={{ backgroundColor: day.color, opacity: (isActive || (selectedDay === 'all' && hoveredLegendDay === null)) ? 1 : 0.4 }}
                         onMouseEnter={() => setHoveredLegendDay(day.day)}
                         onMouseLeave={() => setHoveredLegendDay(null)}
                         onClick={() => {
-                          // Toggle highlight on click (for mobile)
-                          if (hoveredLegendDay === day.day) {
-                            setHoveredLegendDay(null);
+                          if (selectedDay !== 'all' && selectedDay === day.day) {
+                            setSelectedDay('all');
                           } else {
-                            setHoveredLegendDay(day.day);
+                            setSelectedDay(day.day);
                           }
                         }}
-                        onDoubleClick={() => setSelectedDay(day.day)}
                       >
                         <span className="text-white font-bold text-[10px]">{day.day}</span>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
-              )}
 
               {/* Dangerous Routes Legend */}
               {showDangerousRoutes && (
