@@ -28,7 +28,20 @@ npx playwright test tests/app.spec.ts
 
 # Run tests with UI
 npx playwright test --ui
+
+# Deploy to Zeabur (no auto-deploy from GitHub)
+npm run build && zeabur deploy --service-id 6953d07ec0411e68bfa41757 --environment-id 6953d057a7aaff0c1151ea8f -i=false
 ```
+
+## Deployment (Zeabur)
+
+The app is hosted on [Zeabur](https://zeabur.com/projects/6953d057c0411e68bfa41748/services/6953d07ec0411e68bfa41757?envID=6953d057a7aaff0c1151ea8f) as a `PREBUILT_V2` service (no GitHub git trigger). Pushing to GitHub does **not** auto-deploy.
+
+To deploy manually:
+1. `npm run build` — builds production bundle to `dist/`
+2. `zeabur deploy --service-id 6953d07ec0411e68bfa41757 --environment-id 6953d057a7aaff0c1151ea8f -i=false`
+
+Zeabur CLI must be installed (`npm install -g zeabur`) and authenticated (`zeabur auth login --token <API_KEY>`).
 
 ## Architecture
 
