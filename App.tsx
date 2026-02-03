@@ -38,12 +38,14 @@ import {
   Plus,
   Trash2,
   RotateCcw,
-  MapPin
+  MapPin,
+  Copy,
+  CheckCircle
 } from 'lucide-react';
 import { ITINERARY_DATA, DANGEROUS_ROUTES } from './constants';
 import { fetchWeatherData } from './weatherService';
 import { DayPlan, TripEvent, WeatherData } from './types';
-import { saveNote, loadAllNotes, saveChecklistItem, loadAllChecklistItems, resetAllChecklistItems, saveCustomItem, loadCustomItems, deleteCustomItem, CustomChecklistItem, saveEventLocation, loadAllEventLocations, deleteEventLocation } from './supabaseClient';
+import { saveNote, loadAllNotes, deleteNote, saveChecklistItem, loadAllChecklistItems, resetAllChecklistItems, saveCustomItem, loadCustomItems, deleteCustomItem, CustomChecklistItem, saveEventLocation, loadAllEventLocations, deleteEventLocation } from './supabaseClient';
 import { PACKING_CHECKLIST, ChecklistCategory } from './checklistData';
 
 // Initial empty state or loading state could be handled, but for now we start empty
@@ -115,10 +117,13 @@ const App: React.FC = () => {
   const [selectedDay, setSelectedDay] = useState<number | 'all'>(1);
   const [hoveredLegendDay, setHoveredLegendDay] = useState<number | null>(null);
   const [itineraryFilter, setItineraryFilter] = useState<number | 'all'>('all');
+  const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set(ITINERARY_DATA.map(d => d.day)));
+  const [sidebarExpandedDays, setSidebarExpandedDays] = useState<Set<number>>(new Set(ITINERARY_DATA.map(d => d.day)));
   const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<string | null>(null);
   const [eventDetails, setEventDetails] = useState<Record<string, string>>({});
   const [savingNote, setSavingNote] = useState<string | null>(null);
+  const [copiedExport, setCopiedExport] = useState(false);
 
   // Location override state
   const [eventLocations, setEventLocations] = useState<Record<string, { lat: number; lng: number }>>({});
@@ -488,12 +493,23 @@ const App: React.FC = () => {
   }, [selectedDay, currentDayData]);
 
   const generateMarkdown = () => {
-    let md = '| Day | 時間 | 地點 | 活動 |\n';
-    md += '| --- | --- | --- | --- |\n';
+    let md = '';
     ITINERARY_DATA.forEach(day => {
-      day.events.forEach((event) => {
-        md += `| Day ${day.day} | ${event.time} | ${event.location} | ${event.activity} |\n`;
+      md += `## Day ${day.day} - ${day.date} ${day.title}\n\n`;
+      day.events.forEach((event, i) => {
+        md += `### ${i + 1}. ${event.time} - ${event.location}\n`;
+        md += `${event.activity}\n`;
+        if (event.notes) md += `> ${event.notes}\n`;
+        if (eventDetails[event.id]) md += `\n**筆記：** ${eventDetails[event.id]}\n`;
+        if (event.booking) {
+          md += `\n**住宿預訂：** ${event.booking.number} | ${event.booking.price} | ${event.booking.period}\n`;
+        }
+        if (event.flight) {
+          md += `\n**航班：** ${event.flight.airline} ${event.flight.flightNumber} | ${event.flight.departureAirport} ${event.flight.departureTime} → ${event.flight.arrivalAirport} ${event.flight.arrivalTime}\n`;
+        }
+        md += '\n';
       });
+      md += '---\n\n';
     });
     return md;
   };
@@ -531,6 +547,22 @@ const App: React.FC = () => {
             </button>
           </div>
 
+          <div className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-100 border-b">
+            <button
+              onClick={() => setSidebarExpandedDays(new Set(ITINERARY_DATA.map(d => d.day)))}
+              className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${sidebarExpandedDays.size === ITINERARY_DATA.length ? 'bg-slate-700 text-white' : 'bg-white text-slate-500 hover:bg-slate-200 border border-slate-200'}`}
+            >
+              <ChevronDown size={12} />
+              展開全部
+            </button>
+            <button
+              onClick={() => setSidebarExpandedDays(new Set())}
+              className={`px-2 py-1 rounded text-[10px] font-bold transition-all flex items-center gap-0.5 ${sidebarExpandedDays.size === 0 ? 'bg-slate-700 text-white' : 'bg-white text-slate-500 hover:bg-slate-200 border border-slate-200'}`}
+            >
+              <ChevronRight size={12} />
+              收合全部
+            </button>
+          </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-4 bg-slate-50">
             {ITINERARY_DATA.map(day => {
               const weather = weatherData.find(w => w.day === day.day);
@@ -540,19 +572,35 @@ const App: React.FC = () => {
                   key={day.day}
                   className={`rounded-xl border bg-white overflow-hidden shadow-sm hover:shadow-md transition-all ${isActiveDay ? 'ring-2 ring-offset-2 ring-slate-400' : ''}`}
                 >
-                  <div className="p-2 md:p-3 font-bold text-white flex items-center justify-between text-sm md:text-base" style={{ backgroundColor: day.color }}>
+                  <button
+                    onClick={() => setSidebarExpandedDays(prev => {
+                      const next = new Set(prev);
+                      if (next.has(day.day)) next.delete(day.day);
+                      else next.add(day.day);
+                      return next;
+                    })}
+                    className="w-full p-2 md:p-3 font-bold text-white flex items-center justify-between text-sm md:text-base"
+                    style={{ backgroundColor: day.color }}
+                  >
                     <div className="flex items-center gap-1.5 md:gap-2">
+                      {sidebarExpandedDays.has(day.day) ? <ChevronDown size={14} className="opacity-70" /> : <ChevronRight size={14} className="opacity-70" />}
                       <Calendar size={16} className="md:w-[18px] md:h-[18px]" />
-                      <div className="flex flex-col">
+                      <div className="flex flex-col text-left">
                         <span>Day {day.day}</span>
                         <span className="text-[9px] md:text-[10px] font-normal opacity-80">{day.date}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-black/20 px-1.5 md:px-2 py-0.5 rounded text-[10px] md:text-[11px] font-normal backdrop-blur-sm">
-                      {weather?.icon}
-                      <span>{weather?.temp}</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 bg-black/20 px-1.5 md:px-2 py-0.5 rounded text-[10px] md:text-[11px] font-normal backdrop-blur-sm">
+                        {weather?.icon}
+                        <span>{weather?.temp}</span>
+                      </div>
+                      {!sidebarExpandedDays.has(day.day) && (
+                        <span className="text-[9px] bg-black/20 px-1.5 py-0.5 rounded font-normal">{day.events.length}</span>
+                      )}
                     </div>
-                  </div>
+                  </button>
+                  {sidebarExpandedDays.has(day.day) && (
                   <div className="divide-y divide-slate-100">
                     {day.events.map((event, index) => (
                       <div key={event.id} className="group relative">
@@ -701,8 +749,20 @@ const App: React.FC = () => {
                                 </div>
                               ) : (
                                 getEventDetails(event) ? (
-                                  <div className="text-xs text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-slate-200">
+                                  <div className="relative group text-xs text-slate-700 whitespace-pre-wrap bg-white p-2 rounded border border-slate-200">
                                     {getEventDetails(event)}
+                                    <button
+                                      onClick={async (e) => {
+                                        e.stopPropagation();
+                                        await deleteNote(event.id);
+                                        setEventDetails(prev => { const next = { ...prev }; delete next[event.id]; return next; });
+                                        try { const stored = JSON.parse(localStorage.getItem('eventDetails') || '{}'); delete stored[event.id]; localStorage.setItem('eventDetails', JSON.stringify(stored)); } catch {}
+                                      }}
+                                      className="absolute top-1 right-1 p-1 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all rounded"
+                                      title="刪除筆記"
+                                    >
+                                      <Trash2 size={12} />
+                                    </button>
                                   </div>
                                 ) : (
                                   <div
@@ -823,6 +883,7 @@ const App: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                  )}
                 </div>
               );
             })}
@@ -1232,6 +1293,24 @@ const App: React.FC = () => {
                   ))}
                 </div>
 
+                {/* Expand/Collapse All */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setExpandedDays(new Set(ITINERARY_DATA.map(d => d.day)))}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${expandedDays.size === ITINERARY_DATA.length ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    <ChevronDown size={14} />
+                    展開全部
+                  </button>
+                  <button
+                    onClick={() => setExpandedDays(new Set())}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${expandedDays.size === 0 ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    <ChevronRight size={14} />
+                    收合全部
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
                   {weatherData.map(w => (
                     <button
@@ -1248,163 +1327,228 @@ const App: React.FC = () => {
                 </div>
 
                 {/* Desktop Table View */}
-                <div className="hidden md:block border rounded-xl overflow-hidden shadow-sm">
-                  <table className="min-w-full divide-y divide-slate-200">
-                    <thead className="bg-slate-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Day</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">時間</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">地點/活動</th>
-                        <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">氣候/備註</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-slate-200">
-                      {ITINERARY_DATA
-                        .filter(day => itineraryFilter === 'all' || day.day === itineraryFilter)
-                        .flatMap(day => day.events.map((e, i) => ({ ...e, dayColor: day.color, order: i + 1, dayIdx: day.day })))
-                        .map((event, idx) => {
-                          const weather = weatherData.find(w => w.day === event.dayIdx);
-                          return (
-                            <tr key={`row-${idx}`} className="hover:bg-slate-50 transition-colors">
-                              <td className="px-4 py-3 whitespace-nowrap text-xs font-bold">
-                                <span className="px-2 py-0.5 rounded text-white" style={{ backgroundColor: event.dayColor }}>
-                                  Day {event.dayIdx}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 font-mono">{event.time}</td>
-                              <td className="px-4 py-3 text-sm text-slate-900">
-                                {(() => { const loc = getEventLocation(event); return (
-                                <div className="flex items-center gap-2 font-semibold">
-                                  {event.location}
-                                  <a
-                                    href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:text-blue-700"
-                                  >
-                                    <ExternalLink size={12} />
-                                  </a>
-                                </div>
-                                ); })()}
-                                <div className="text-xs text-slate-500 mt-0.5">{event.activity}</div>
-                              </td>
-                              <td className="px-4 py-3 text-sm text-slate-500 italic">
-                                <div className="flex items-center gap-1 text-[11px] text-blue-500 mb-1 font-bold">
-                                  {weather?.icon} {weather?.temp}
-                                </div>
-                                {event.notes}
-                                {event.booking && (
-                                  <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
-                                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
-                                      <div className="bg-amber-100 text-amber-700 p-1 rounded">
-                                        <Ticket size={14} />
+                <div className="hidden md:block space-y-4">
+                  {ITINERARY_DATA
+                    .filter(day => itineraryFilter === 'all' || day.day === itineraryFilter)
+                    .map(day => {
+                      const isExpanded = expandedDays.has(day.day);
+                      const weather = weatherData.find(w => w.day === day.day);
+                      return (
+                        <div key={`desktop-day-${day.day}`} className="border rounded-xl overflow-hidden shadow-sm">
+                          <button
+                            onClick={() => setExpandedDays(prev => {
+                              const next = new Set(prev);
+                              if (next.has(day.day)) next.delete(day.day);
+                              else next.add(day.day);
+                              return next;
+                            })}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                          >
+                            {isExpanded ? <ChevronDown size={16} className="text-slate-400" /> : <ChevronRight size={16} className="text-slate-400" />}
+                            <span className="px-2.5 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: day.color }}>
+                              Day {day.day}
+                            </span>
+                            <span className="font-bold text-slate-800 text-sm">{day.title}</span>
+                            <span className="text-xs text-slate-400 ml-1">{day.date}</span>
+                            {weather && (
+                              <span className="ml-auto flex items-center gap-1 text-xs text-blue-500 font-bold">
+                                {weather.icon} {weather.temp}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-slate-400">{day.events.length} 個活動</span>
+                          </button>
+                          {isExpanded && (
+                            <table className="min-w-full divide-y divide-slate-200">
+                              <thead className="bg-slate-50/50">
+                                <tr>
+                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">時間</th>
+                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">地點/活動</th>
+                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">氣候/備註</th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-slate-200">
+                                {day.events.map((event, idx) => (
+                                  <tr key={`row-${day.day}-${idx}`} className="hover:bg-slate-50 transition-colors">
+                                    <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 font-mono">{event.time}</td>
+                                    <td className="px-4 py-3 text-sm text-slate-900">
+                                      {(() => { const loc = getEventLocation(event); return (
+                                      <div className="flex items-center gap-2 font-semibold">
+                                        {event.location}
+                                        <a
+                                          href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-500 hover:text-blue-700"
+                                        >
+                                          <ExternalLink size={12} />
+                                        </a>
                                       </div>
-                                      <span className="text-xs font-bold text-slate-700">住宿預訂詳情</span>
-                                      <span className="ml-auto text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">
-                                        {event.booking.provider}
-                                      </span>
-                                    </div>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                      <div>
-                                        <div className="text-[10px] text-slate-400 mb-0.5">預約編號</div>
-                                        <div className="font-mono font-bold text-slate-700">{event.booking.number}</div>
+                                      ); })()}
+                                      <div className="text-xs text-slate-500 mt-0.5">{event.activity}</div>
+                                    </td>
+                                    <td className="px-4 py-3 text-sm text-slate-500 italic">
+                                      <div className="flex items-center gap-1 text-[11px] text-blue-500 mb-1 font-bold">
+                                        {weather?.icon} {weather?.temp}
                                       </div>
-                                      <div>
-                                        <div className="text-[10px] text-slate-400 mb-0.5">支付金額</div>
-                                        <div className="font-bold text-slate-700">{event.booking.price}</div>
-                                      </div>
-                                      <div>
-                                        <div className="text-[10px] text-slate-400 mb-0.5">付款方式</div>
-                                        <div className="text-slate-700">{event.booking.payment}</div>
-                                      </div>
-                                      <div>
-                                        <div className="text-[10px] text-slate-400 mb-0.5">入住期間</div>
-                                        <div className="text-slate-700">{event.booking.period}</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
+                                      {event.notes}
+                                      {eventDetails[event.id] && (
+                                        <div className="mt-1 text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2 whitespace-pre-wrap">
+                                          <span className="font-bold text-blue-600 text-[10px]">筆記：</span> {eventDetails[event.id]}
+                                        </div>
+                                      )}
+                                      {event.booking && (
+                                        <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
+                                          <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
+                                            <div className="bg-amber-100 text-amber-700 p-1 rounded">
+                                              <Ticket size={14} />
+                                            </div>
+                                            <span className="text-xs font-bold text-slate-700">住宿預訂詳情</span>
+                                            <span className="ml-auto text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">
+                                              {event.booking.provider}
+                                            </span>
+                                          </div>
+                                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                            <div>
+                                              <div className="text-[10px] text-slate-400 mb-0.5">預約編號</div>
+                                              <div className="font-mono font-bold text-slate-700">{event.booking.number}</div>
+                                            </div>
+                                            <div>
+                                              <div className="text-[10px] text-slate-400 mb-0.5">支付金額</div>
+                                              <div className="font-bold text-slate-700">{event.booking.price}</div>
+                                            </div>
+                                            <div>
+                                              <div className="text-[10px] text-slate-400 mb-0.5">付款方式</div>
+                                              <div className="text-slate-700">{event.booking.payment}</div>
+                                            </div>
+                                            <div>
+                                              <div className="text-[10px] text-slate-400 mb-0.5">入住期間</div>
+                                              <div className="text-slate-700">{event.booking.period}</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+                      );
+                    })}
                 </div>
 
                 {/* Mobile Card View */}
                 <div className="md:hidden space-y-4">
                   {ITINERARY_DATA
                     .filter(day => itineraryFilter === 'all' || day.day === itineraryFilter)
-                    .flatMap(day => day.events.map((e, i) => ({ ...e, dayColor: day.color, order: i + 1, dayIdx: day.day })))
-                    .map((event, idx) => {
-                      const weather = weatherData.find(w => w.day === event.dayIdx);
+                    .map(day => {
+                      const isExpanded = expandedDays.has(day.day);
+                      const weather = weatherData.find(w => w.day === day.day);
                       return (
-                        <div key={`mobile-card-${idx}`} className="bg-white border rounded-xl shadow-sm overflow-hidden">
-                          <div className="p-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-                            <div className="flex items-center gap-2">
-                              <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: event.dayColor }}>
-                                Day {event.dayIdx}
+                        <div key={`mobile-day-${day.day}`}>
+                          <button
+                            onClick={() => setExpandedDays(prev => {
+                              const next = new Set(prev);
+                              if (next.has(day.day)) next.delete(day.day);
+                              else next.add(day.day);
+                              return next;
+                            })}
+                            className="w-full flex items-center gap-2 px-3 py-2.5 bg-slate-50 border rounded-xl mb-2 hover:bg-slate-100 transition-colors text-left"
+                          >
+                            {isExpanded ? <ChevronDown size={16} className="text-slate-400 shrink-0" /> : <ChevronRight size={16} className="text-slate-400 shrink-0" />}
+                            <span className="px-2 py-0.5 rounded text-xs font-bold text-white shrink-0" style={{ backgroundColor: day.color }}>
+                              Day {day.day}
+                            </span>
+                            <span className="font-bold text-slate-800 text-sm truncate">{day.title}</span>
+                            {weather && (
+                              <span className="ml-auto flex items-center gap-1 text-[10px] text-blue-500 font-bold shrink-0">
+                                {weather.icon} {weather.temp}
                               </span>
-                              <span className="font-mono text-sm font-bold text-slate-600">{event.time}</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
-                              {weather?.icon}
-                              <span>{weather?.temp}</span>
-                            </div>
-                          </div>
-                          <div className="p-4">
-                            {(() => { const loc = getEventLocation(event); return (
-                            <div className="flex justify-between items-start gap-2 mb-2">
-                              <div>
-                                <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
-                                <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
-                              </div>
-                              <a
-                                href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                              >
-                                <ExternalLink size={16} />
-                              </a>
-                            </div>
-                            ); })()}
-
-                            {event.notes && (
-                              <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">
-                                {event.notes}
-                              </div>
                             )}
+                          </button>
+                          {isExpanded && (
+                            <div className="space-y-3 mb-4">
+                              {day.events.map((event, idx) => (
+                                <div key={`mobile-card-${day.day}-${idx}`} className="bg-white border rounded-xl shadow-sm overflow-hidden ml-2">
+                                  <div className="p-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                                    <div className="flex items-center gap-2">
+                                      <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: day.color }}>
+                                        Day {day.day}
+                                      </span>
+                                      <span className="font-mono text-sm font-bold text-slate-600">{event.time}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                                      {weather?.icon}
+                                      <span>{weather?.temp}</span>
+                                    </div>
+                                  </div>
+                                  <div className="p-4">
+                                    {(() => { const loc = getEventLocation(event); return (
+                                    <div className="flex justify-between items-start gap-2 mb-2">
+                                      <div>
+                                        <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
+                                        <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
+                                      </div>
+                                      <a
+                                        href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                      >
+                                        <ExternalLink size={16} />
+                                      </a>
+                                    </div>
+                                    ); })()}
 
-                            {event.booking && (
-                              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-                                <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-100/50">
-                                  <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs">
-                                    <Ticket size={14} />
-                                    <span>住宿預訂</span>
+                                    {event.notes && (
+                                      <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">
+                                        {event.notes}
+                                      </div>
+                                    )}
+
+                                    {eventDetails[event.id] && (
+                                      <div className="text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-3 whitespace-pre-wrap">
+                                        <div className="flex items-center gap-1 text-blue-600 font-bold text-[10px] mb-1">
+                                          <StickyNote size={10} />
+                                          <span>筆記</span>
+                                        </div>
+                                        {eventDetails[event.id]}
+                                      </div>
+                                    )}
+
+                                    {event.booking && (
+                                      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                        <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-100/50">
+                                          <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs">
+                                            <Ticket size={14} />
+                                            <span>住宿預訂</span>
+                                          </div>
+                                          <span className="text-[10px] bg-white/50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-100">
+                                            {event.booking.provider}
+                                          </span>
+                                        </div>
+                                        <div className="space-y-2 text-xs">
+                                          <div className="flex justify-between">
+                                            <span className="text-slate-400">預約編號</span>
+                                            <span className="font-mono font-bold text-slate-700">{event.booking.number}</span>
+                                          </div>
+                                          <div className="flex justify-between">
+                                            <span className="text-slate-400">金額</span>
+                                            <span className="font-bold text-slate-700">{event.booking.price}</span>
+                                          </div>
+                                          <div className="flex justify-between">
+                                            <span className="text-slate-400">付款方式</span>
+                                            <span className="text-slate-700">{event.booking.payment}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
-                                  <span className="text-[10px] bg-white/50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-100">
-                                    {event.booking.provider}
-                                  </span>
                                 </div>
-                                <div className="space-y-2 text-xs">
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-400">預約編號</span>
-                                    <span className="font-mono font-bold text-slate-700">{event.booking.number}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-400">金額</span>
-                                    <span className="font-bold text-slate-700">{event.booking.price}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-slate-400">付款方式</span>
-                                    <span className="text-slate-700">{event.booking.payment}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -1570,10 +1714,39 @@ const App: React.FC = () => {
             <div className="absolute inset-0 bg-white overflow-y-auto p-6 md:p-10">
               <div className="max-w-4xl mx-auto">
                 <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  <Download className="text-blue-600" /> 資料匯出 (包含天氣資訊)
+                  <Download className="text-blue-600" /> 資料匯出
                 </h2>
-                <div className="bg-slate-50 border rounded-xl p-6 overflow-x-auto font-mono text-[13px] text-slate-600">
-                  {generateMarkdown().split('\n').map((line, i) => <div key={i}>{line}</div>)}
+                <p className="text-sm text-slate-500 mb-4">包含行程、住宿、航班及筆記資訊</p>
+
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(generateMarkdown());
+                      setCopiedExport(true);
+                      setTimeout(() => setCopiedExport(false), 2000);
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all shadow-sm ${copiedExport ? 'bg-green-600 text-white' : 'bg-slate-800 text-white hover:bg-slate-700'}`}
+                  >
+                    {copiedExport ? <><CheckCircle size={16} /> 已複製</> : <><Copy size={16} /> 複製全部</>}
+                  </button>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([generateMarkdown()], { type: 'text/markdown' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'tohoku-itinerary.md';
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
+                  >
+                    <Download size={16} /> 下載 Markdown
+                  </button>
+                </div>
+
+                <div className="bg-slate-50 border rounded-xl p-6 overflow-x-auto text-[13px] text-slate-600 whitespace-pre-wrap leading-relaxed">
+                  {generateMarkdown()}
                 </div>
               </div>
             </div>
