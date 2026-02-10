@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import {
@@ -40,8 +40,12 @@ import {
   RotateCcw,
   MapPin,
   Copy,
-  CheckCircle
+  CheckCircle,
+  GripVertical
 } from 'lucide-react';
+import { DndContext, closestCenter, DragEndEvent, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { ITINERARY_DATA, DANGEROUS_ROUTES } from './constants';
 import { fetchWeatherData } from './weatherService';
 import { DayPlan, TripEvent, WeatherData } from './types';
@@ -109,6 +113,42 @@ const MapInvalidator = () => {
   return null;
 };
 
+const SortableEvent: React.FC<{ id: string; children: React.ReactNode }> = ({ id, children }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : 'auto',
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <div className="flex items-start">
+        <div
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing p-1.5 text-slate-300 hover:text-slate-500 touch-none flex items-center"
+          title="拖曳重新排序"
+        >
+          <GripVertical size={16} />
+        </div>
+        <div className="flex-1 min-w-0">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'map' | 'itinerary' | 'export' | 'booking' | 'flight' | 'checklist'>('map');
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -152,6 +192,18 @@ const App: React.FC = () => {
   const [newItemName, setNewItemName] = useState('');
   const [newItemNote, setNewItemNote] = useState('');
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Drag-and-drop reorder state
+  const [reorderedEvents, setReorderedEvents] = useState<Record<number, string[]>>({});
+  const [calculatedTravelTimes, setCalculatedTravelTimes] = useState<Record<number, (string | null)[]>>({});
+  const [calculatingTimes, setCalculatingTimes] = useState<Record<number, boolean>>({});
+  const hasInitializedTravelTimes = useRef(false);
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
+  );
 
   // Load notes from Supabase on mount
   useEffect(() => {
@@ -446,6 +498,114 @@ const App: React.FC = () => {
   const hasCustomLocation = (eventId: string) => {
     return eventLocations[eventId] !== undefined;
   };
+
+  // --- Drag-and-drop helpers ---
+
+  // Load persisted reorder from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('tripReorderedEvents');
+    if (saved) {
+      try { setReorderedEvents(JSON.parse(saved)); } catch {}
+    }
+  }, []);
+
+  // Get events in user-defined order (or default)
+  const getOrderedEvents = useCallback((day: DayPlan): TripEvent[] => {
+    const orderedIds = reorderedEvents[day.day];
+    if (!orderedIds || orderedIds.length === 0) return day.events;
+    const eventMap = new Map(day.events.map(e => [e.id, e]));
+    const ordered: TripEvent[] = [];
+    for (const id of orderedIds) {
+      const event = eventMap.get(id);
+      if (event) { ordered.push(event); eventMap.delete(id); }
+    }
+    eventMap.forEach(e => ordered.push(e));
+    return ordered;
+  }, [reorderedEvents]);
+
+  // Fetch driving times from OSRM for a day's events
+  const fetchDrivingTimes = useCallback(async (dayNumber: number, events: TripEvent[]) => {
+    if (events.length < 2) {
+      setCalculatedTravelTimes(prev => ({ ...prev, [dayNumber]: [] }));
+      return;
+    }
+    setCalculatingTimes(prev => ({ ...prev, [dayNumber]: true }));
+    try {
+      const coords = events.map(e => {
+        const loc = getEventLocation(e);
+        return `${loc.lng},${loc.lat}`;
+      }).join(';');
+      const response = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${coords}?overview=false&steps=false`
+      );
+      const data = await response.json();
+      if (data.code === 'Ok' && data.routes?.[0]?.legs) {
+        const times = data.routes[0].legs.map((leg: { duration: number }) => {
+          const minutes = Math.round(leg.duration / 60);
+          if (minutes >= 60) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            return m > 0 ? `${h}h${m}m` : `${h}h`;
+          }
+          return `${minutes}分`;
+        });
+        setCalculatedTravelTimes(prev => ({ ...prev, [dayNumber]: times }));
+      }
+    } catch (error) {
+      console.error('OSRM fetch failed for day', dayNumber, error);
+    } finally {
+      setCalculatingTimes(prev => ({ ...prev, [dayNumber]: false }));
+    }
+  }, [eventLocations]);
+
+  // Get travel time between event at index and next event
+  const getTravelTimeBetween = useCallback((dayNumber: number, eventIndex: number): string | null => {
+    const calculated = calculatedTravelTimes[dayNumber];
+    if (calculated && calculated[eventIndex] !== undefined) {
+      return calculated[eventIndex];
+    }
+    return null;
+  }, [calculatedTravelTimes]);
+
+  // On reorder loaded from localStorage, calculate driving times
+  useEffect(() => {
+    if (hasInitializedTravelTimes.current) return;
+    if (Object.keys(reorderedEvents).length === 0) return;
+    hasInitializedTravelTimes.current = true;
+    Object.entries(reorderedEvents).forEach(([dayStr]) => {
+      const dayNumber = parseInt(dayStr, 10);
+      const day = ITINERARY_DATA.find(d => d.day === dayNumber);
+      if (day) fetchDrivingTimes(dayNumber, getOrderedEvents(day));
+    });
+  }, [reorderedEvents, getOrderedEvents, fetchDrivingTimes]);
+
+  // Handle drag end - reorder events
+  const handleDragEnd = useCallback((dayNumber: number) => (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const day = ITINERARY_DATA.find(d => d.day === dayNumber);
+    if (!day) return;
+    const currentEvents = getOrderedEvents(day);
+    const oldIndex = currentEvents.findIndex(e => e.id === active.id);
+    const newIndex = currentEvents.findIndex(e => e.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const newOrder = arrayMove(currentEvents, oldIndex, newIndex) as TripEvent[];
+    const newOrderIds = newOrder.map(e => e.id);
+    const updated = { ...reorderedEvents, [dayNumber]: newOrderIds };
+    setReorderedEvents(updated);
+    localStorage.setItem('tripReorderedEvents', JSON.stringify(updated));
+    fetchDrivingTimes(dayNumber, newOrder);
+  }, [reorderedEvents, getOrderedEvents, fetchDrivingTimes]);
+
+  // Reset day order to original
+  const handleResetOrder = useCallback((dayNumber: number) => {
+    const updated = { ...reorderedEvents };
+    delete updated[dayNumber];
+    setReorderedEvents(updated);
+    localStorage.setItem('tripReorderedEvents', JSON.stringify(updated));
+    setCalculatedTravelTimes(prev => { const next = { ...prev }; delete next[dayNumber]; return next; });
+  }, [reorderedEvents]);
+
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [mapConfig, setMapConfig] = useState<{ center: [number, number], zoom: number }>({
     center: [35.6895, 139.6917],
@@ -496,7 +656,7 @@ const App: React.FC = () => {
     let md = '';
     ITINERARY_DATA.forEach(day => {
       md += `## Day ${day.day} - ${day.date} ${day.title}\n\n`;
-      day.events.forEach((event, i) => {
+      getOrderedEvents(day).forEach((event, i) => {
         md += `### ${i + 1}. ${event.time} - ${event.location}\n`;
         md += `${event.activity}\n`;
         if (event.notes) md += `> ${event.notes}\n`;
@@ -624,10 +784,10 @@ const App: React.FC = () => {
                       <button
                         onClick={() => setExpandedEvents(prev => {
                           const next = new Set(prev);
-                          day.events.forEach(e => next.add(e.id));
+                          getOrderedEvents(day).forEach(e => next.add(e.id));
                           return next;
                         })}
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${day.events.every(e => expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${getOrderedEvents(day).every(e => expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
                       >
                         <ChevronDown size={10} />
                         展開明細
@@ -635,17 +795,20 @@ const App: React.FC = () => {
                       <button
                         onClick={() => setExpandedEvents(prev => {
                           const next = new Set(prev);
-                          day.events.forEach(e => next.delete(e.id));
+                          getOrderedEvents(day).forEach(e => next.delete(e.id));
                           return next;
                         })}
-                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${day.events.every(e => !expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-semibold transition-all flex items-center gap-0.5 ${getOrderedEvents(day).every(e => !expandedEvents.has(e.id)) ? 'bg-slate-600 text-white' : 'bg-white text-slate-400 hover:bg-slate-200 border border-slate-200'}`}
                       >
                         <ChevronRight size={10} />
                         收合明細
                       </button>
                     </div>
-                    {day.events.map((event, index) => (
-                      <div key={event.id} className="group relative">
+                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(day.day)}>
+                      <SortableContext items={getOrderedEvents(day).map(e => e.id)} strategy={verticalListSortingStrategy}>
+                    {getOrderedEvents(day).map((event, index) => (
+                      <SortableEvent key={event.id} id={event.id}>
+                      <div className="group relative">
                         <div className="flex items-start">
                           <button
                             onClick={() => handleFocusLocation(event)}
@@ -655,12 +818,16 @@ const App: React.FC = () => {
                               <span className="text-[10px] md:text-[11px] font-bold h-5 w-5 md:h-6 md:w-6 rounded-full flex items-center justify-center border text-white mb-1 shadow-sm" style={{ backgroundColor: day.color, borderColor: 'white' }}>
                                 {index + 1}
                               </span>
-                              {event.travelTime && (
-                                <div className="text-[9px] text-slate-400 font-medium mb-0.5 flex items-center justify-center gap-0.5 whitespace-nowrap">
-                                  <Car size={10} />
-                                  {event.travelTime}
-                                </div>
-                              )}
+                              {(() => {
+                                const calcTime = index > 0 ? getTravelTimeBetween(day.day, index - 1) : null;
+                                const displayTime = calcTime || event.travelTime;
+                                return displayTime ? (
+                                  <div className={`text-[9px] font-bold mb-0.5 flex items-center justify-center gap-0.5 whitespace-nowrap px-1 py-0.5 rounded ${calcTime ? 'bg-blue-50 text-blue-600' : 'text-slate-400'}`}>
+                                    <Car size={10} />
+                                    {displayTime}
+                                  </div>
+                                ) : null;
+                              })()}
                               <span className="text-[10px] font-mono text-slate-400 whitespace-nowrap">{event.time}</span>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -928,7 +1095,21 @@ const App: React.FC = () => {
                           </div>
                         )}
                       </div>
+                      </SortableEvent>
                     ))}
+                      </SortableContext>
+                    </DndContext>
+                    {reorderedEvents[day.day] && (
+                      <div className="flex justify-center py-1.5 bg-slate-50 border-t border-slate-100">
+                        <button
+                          onClick={() => handleResetOrder(day.day)}
+                          className="text-[10px] bg-slate-200 text-slate-500 hover:bg-red-100 hover:text-red-500 px-2 py-1 rounded font-bold flex items-center gap-1 transition-colors"
+                        >
+                          <RotateCcw size={10} />
+                          還原順序
+                        </button>
+                      </div>
+                    )}
                   </div>
                   )}
                 </div>
@@ -1047,7 +1228,7 @@ const App: React.FC = () => {
                       : (isDayHighlighted ? 0.9 : 0.2);
                     return (
                     <React.Fragment key={`day-${day.day}`}>
-                      {day.events.map((event, eventIdx) => {
+                      {getOrderedEvents(day).map((event, eventIdx) => {
                         const loc = getEventLocation(event);
                         return (
                         <Marker key={event.id} position={[loc.lat, loc.lng]} icon={createCustomIcon(day.color, eventIdx + 1, markerOpacity)}>
@@ -1108,7 +1289,7 @@ const App: React.FC = () => {
                         );
                       })}
                       <Polyline
-                        positions={day.events.map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
+                        positions={getOrderedEvents(day).map(e => { const loc = getEventLocation(e); return [loc.lat, loc.lng]; })}
                         pathOptions={{
                           color: day.color,
                           weight: polylineWeight,
@@ -1117,9 +1298,10 @@ const App: React.FC = () => {
                         }}
                       />
                       {/* Day Route Label - shows at midpoint of route */}
-                      {day.events.length >= 2 && (() => {
-                        const midIdx = Math.floor(day.events.length / 2);
-                        const midEvent = day.events[midIdx];
+                      {getOrderedEvents(day).length >= 2 && (() => {
+                        const ordEvts = getOrderedEvents(day);
+                        const midIdx = Math.floor(ordEvts.length / 2);
+                        const midEvent = ordEvts[midIdx];
                         const midLoc = getEventLocation(midEvent);
                         return (
                           <Marker
@@ -1380,16 +1562,20 @@ const App: React.FC = () => {
                     .map(day => {
                       const isExpanded = expandedDays.has(day.day);
                       const weather = weatherData.find(w => w.day === day.day);
+                      const orderedEvents = getOrderedEvents(day);
                       return (
                         <div key={`desktop-day-${day.day}`} className="border rounded-xl overflow-hidden shadow-sm">
-                          <button
+                          <div
+                            role="button"
+                            tabIndex={0}
                             onClick={() => setExpandedDays(prev => {
                               const next = new Set(prev);
                               if (next.has(day.day)) next.delete(day.day);
                               else next.add(day.day);
                               return next;
                             })}
-                            className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpandedDays(prev => { const next = new Set(prev); if (next.has(day.day)) next.delete(day.day); else next.add(day.day); return next; }); } }}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left cursor-pointer"
                           >
                             {isExpanded ? <ChevronDown size={16} className="text-slate-400" /> : <ChevronRight size={16} className="text-slate-400" />}
                             <span className="px-2.5 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: day.color }}>
@@ -1397,88 +1583,116 @@ const App: React.FC = () => {
                             </span>
                             <span className="font-bold text-slate-800 text-sm">{day.title}</span>
                             <span className="text-xs text-slate-400 ml-1">{day.date}</span>
+                            {reorderedEvents[day.day] && (
+                              <div className="flex items-center gap-1.5 ml-2">
+                                <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold">已調整順序</span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleResetOrder(day.day); }}
+                                  className="text-[10px] bg-slate-200 text-slate-500 hover:bg-red-100 hover:text-red-500 px-1.5 py-0.5 rounded font-bold flex items-center gap-0.5 transition-colors"
+                                >
+                                  <RotateCcw size={10} />
+                                  還原
+                                </button>
+                              </div>
+                            )}
                             {weather && (
                               <span className="ml-auto flex items-center gap-1 text-xs text-blue-500 font-bold">
                                 {weather.icon} {weather.temp}
                               </span>
                             )}
                             <span className="text-[10px] text-slate-400">{day.events.length} 個活動</span>
-                          </button>
+                          </div>
                           {isExpanded && (
-                            <table className="min-w-full divide-y divide-slate-200">
-                              <thead className="bg-slate-50/50">
-                                <tr>
-                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">時間</th>
-                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">地點/活動</th>
-                                  <th className="px-4 py-2 text-left text-xs font-bold text-slate-500 uppercase">氣候/備註</th>
-                                </tr>
-                              </thead>
-                              <tbody className="bg-white divide-y divide-slate-200">
-                                {day.events.map((event, idx) => (
-                                  <tr key={`row-${day.day}-${idx}`} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 font-mono">{event.time}</td>
-                                    <td className="px-4 py-3 text-sm text-slate-900">
-                                      {(() => { const loc = getEventLocation(event); return (
-                                      <div className="flex items-center gap-2 font-semibold">
-                                        {event.location}
-                                        <a
-                                          href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-500 hover:text-blue-700"
-                                        >
-                                          <ExternalLink size={12} />
-                                        </a>
-                                      </div>
-                                      ); })()}
-                                      <div className="text-xs text-slate-500 mt-0.5">{event.activity}</div>
-                                    </td>
-                                    <td className="px-4 py-3 text-sm text-slate-500 italic">
-                                      <div className="flex items-center gap-1 text-[11px] text-blue-500 mb-1 font-bold">
-                                        {weather?.icon} {weather?.temp}
-                                      </div>
-                                      {event.notes}
-                                      {eventDetails[event.id] && (
-                                        <div className="mt-1 text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2 whitespace-pre-wrap">
-                                          <span className="font-bold text-blue-600 text-[10px]">筆記：</span> {eventDetails[event.id]}
-                                        </div>
-                                      )}
-                                      {event.booking && (
-                                        <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
-                                          <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
-                                            <div className="bg-amber-100 text-amber-700 p-1 rounded">
-                                              <Ticket size={14} />
+                            <div className="divide-y divide-slate-200">
+                              <div className="grid grid-cols-[40px_80px_1fr_1fr] bg-slate-50/50 px-4 py-2">
+                                <span className="text-xs font-bold text-slate-500 uppercase"></span>
+                                <span className="text-xs font-bold text-slate-500 uppercase">時間</span>
+                                <span className="text-xs font-bold text-slate-500 uppercase">地點/活動</span>
+                                <span className="text-xs font-bold text-slate-500 uppercase">氣候/備註</span>
+                              </div>
+                              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(day.day)}>
+                                <SortableContext items={orderedEvents.map(e => e.id)} strategy={verticalListSortingStrategy}>
+                                  <div className="bg-white">
+                                    {orderedEvents.map((event, idx) => (
+                                      <React.Fragment key={event.id}>
+                                        <SortableEvent id={event.id}>
+                                          <div className="grid grid-cols-[80px_1fr_1fr] hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0">
+                                            <div className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 font-mono">{event.time}</div>
+                                            <div className="px-4 py-3 text-sm text-slate-900">
+                                              {(() => { const loc = getEventLocation(event); return (
+                                              <div className="flex items-center gap-2 font-semibold">
+                                                <span className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: day.color }}>{idx + 1}</span>
+                                                {event.location}
+                                                <a href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                                                  <ExternalLink size={12} />
+                                                </a>
+                                              </div>
+                                              ); })()}
+                                              <div className="text-xs text-slate-500 mt-0.5 ml-8">{event.activity}</div>
                                             </div>
-                                            <span className="text-xs font-bold text-slate-700">住宿預訂詳情</span>
-                                            <span className="ml-auto text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">
-                                              {event.booking.provider}
-                                            </span>
-                                          </div>
-                                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                            <div>
-                                              <div className="text-[10px] text-slate-400 mb-0.5">預約編號</div>
-                                              <div className="font-mono font-bold text-slate-700">{event.booking.number}</div>
-                                            </div>
-                                            <div>
-                                              <div className="text-[10px] text-slate-400 mb-0.5">支付金額</div>
-                                              <div className="font-bold text-slate-700">{event.booking.price}</div>
-                                            </div>
-                                            <div>
-                                              <div className="text-[10px] text-slate-400 mb-0.5">付款方式</div>
-                                              <div className="text-slate-700">{event.booking.payment}</div>
-                                            </div>
-                                            <div>
-                                              <div className="text-[10px] text-slate-400 mb-0.5">入住期間</div>
-                                              <div className="text-slate-700">{event.booking.period}</div>
+                                            <div className="px-4 py-3 text-sm text-slate-500 italic">
+                                              <div className="flex items-center gap-1 text-[11px] text-blue-500 mb-1 font-bold">
+                                                {weather?.icon} {weather?.temp}
+                                              </div>
+                                              {event.notes}
+                                              {eventDetails[event.id] && (
+                                                <div className="mt-1 text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2 whitespace-pre-wrap">
+                                                  <span className="font-bold text-blue-600 text-[10px]">筆記：</span> {eventDetails[event.id]}
+                                                </div>
+                                              )}
+                                              {event.booking && (
+                                                <div className="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5">
+                                                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-200">
+                                                    <div className="bg-amber-100 text-amber-700 p-1 rounded"><Ticket size={14} /></div>
+                                                    <span className="text-xs font-bold text-slate-700">住宿預訂詳情</span>
+                                                    <span className="ml-auto text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">{event.booking.provider}</span>
+                                                  </div>
+                                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                                    <div><div className="text-[10px] text-slate-400 mb-0.5">預約編號</div><div className="font-mono font-bold text-slate-700">{event.booking.number}</div></div>
+                                                    <div><div className="text-[10px] text-slate-400 mb-0.5">支付金額</div><div className="font-bold text-slate-700">{event.booking.price}</div></div>
+                                                    <div><div className="text-[10px] text-slate-400 mb-0.5">付款方式</div><div className="text-slate-700">{event.booking.payment}</div></div>
+                                                    <div><div className="text-[10px] text-slate-400 mb-0.5">入住期間</div><div className="text-slate-700">{event.booking.period}</div></div>
+                                                  </div>
+                                                </div>
+                                              )}
                                             </div>
                                           </div>
-                                        </div>
-                                      )}
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                                        </SortableEvent>
+                                        {idx < orderedEvents.length - 1 && (() => {
+                                          const travelTime = getTravelTimeBetween(day.day, idx);
+                                          const isCalc = calculatingTimes[day.day];
+                                          if (!travelTime && !isCalc && !reorderedEvents[day.day]) {
+                                            // Show original travelTime from next event if no reorder
+                                            const nextEvent = orderedEvents[idx + 1];
+                                            if (!nextEvent?.travelTime) return null;
+                                            return (
+                                              <div className="flex items-center justify-center py-1.5 px-4">
+                                                <div className="flex-1 border-t border-dashed border-slate-200" />
+                                                <div className="mx-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm" style={{ backgroundColor: day.color, opacity: 0.85 }}>
+                                                  <Car size={12} /><span>{nextEvent.travelTime}</span>
+                                                </div>
+                                                <div className="flex-1 border-t border-dashed border-slate-200" />
+                                              </div>
+                                            );
+                                          }
+                                          if (!travelTime && !isCalc) return null;
+                                          return (
+                                            <div className="flex items-center justify-center py-1.5 px-4">
+                                              <div className="flex-1 border-t border-dashed border-slate-200" />
+                                              <div className="mx-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm" style={{ backgroundColor: day.color, opacity: 0.85 }}>
+                                                <Car size={12} />
+                                                {isCalc ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span>{travelTime}</span>}
+                                              </div>
+                                              <div className="flex-1 border-t border-dashed border-slate-200" />
+                                            </div>
+                                          );
+                                        })()}
+                                      </React.Fragment>
+                                    ))}
+                                  </div>
+                                </SortableContext>
+                              </DndContext>
+                            </div>
                           )}
                         </div>
                       );
@@ -1492,6 +1706,7 @@ const App: React.FC = () => {
                     .map(day => {
                       const isExpanded = expandedDays.has(day.day);
                       const weather = weatherData.find(w => w.day === day.day);
+                      const orderedEvents = getOrderedEvents(day);
                       return (
                         <div key={`mobile-day-${day.day}`}>
                           <button
@@ -1508,6 +1723,9 @@ const App: React.FC = () => {
                               Day {day.day}
                             </span>
                             <span className="font-bold text-slate-800 text-sm truncate">{day.title}</span>
+                            {reorderedEvents[day.day] && (
+                              <span className="text-[9px] bg-amber-100 text-amber-700 px-1 py-0.5 rounded font-bold shrink-0">已調整</span>
+                            )}
                             {weather && (
                               <span className="ml-auto flex items-center gap-1 text-[10px] text-blue-500 font-bold shrink-0">
                                 {weather.icon} {weather.temp}
@@ -1515,86 +1733,104 @@ const App: React.FC = () => {
                             )}
                           </button>
                           {isExpanded && (
-                            <div className="space-y-3 mb-4">
-                              {day.events.map((event, idx) => (
-                                <div key={`mobile-card-${day.day}-${idx}`} className="bg-white border rounded-xl shadow-sm overflow-hidden ml-2">
-                                  <div className="p-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
-                                    <div className="flex items-center gap-2">
-                                      <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: day.color }}>
-                                        Day {day.day}
-                                      </span>
-                                      <span className="font-mono text-sm font-bold text-slate-600">{event.time}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
-                                      {weather?.icon}
-                                      <span>{weather?.temp}</span>
-                                    </div>
-                                  </div>
-                                  <div className="p-4">
-                                    {(() => { const loc = getEventLocation(event); return (
-                                    <div className="flex justify-between items-start gap-2 mb-2">
-                                      <div>
-                                        <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
-                                        <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
-                                      </div>
-                                      <a
-                                        href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd(day.day)}>
+                              <SortableContext items={orderedEvents.map(e => e.id)} strategy={verticalListSortingStrategy}>
+                                <div className="space-y-0 mb-4">
+                                  {reorderedEvents[day.day] && (
+                                    <div className="flex justify-end mb-2 ml-2">
+                                      <button
+                                        onClick={() => handleResetOrder(day.day)}
+                                        className="text-[10px] bg-slate-200 text-slate-500 hover:bg-red-100 hover:text-red-500 px-2 py-1 rounded font-bold flex items-center gap-1 transition-colors"
                                       >
-                                        <ExternalLink size={16} />
-                                      </a>
+                                        <RotateCcw size={10} />
+                                        還原順序
+                                      </button>
                                     </div>
-                                    ); })()}
-
-                                    {event.notes && (
-                                      <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">
-                                        {event.notes}
-                                      </div>
-                                    )}
-
-                                    {eventDetails[event.id] && (
-                                      <div className="text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-3 whitespace-pre-wrap">
-                                        <div className="flex items-center gap-1 text-blue-600 font-bold text-[10px] mb-1">
-                                          <StickyNote size={10} />
-                                          <span>筆記</span>
+                                  )}
+                                  {orderedEvents.map((event, idx) => (
+                                    <React.Fragment key={event.id}>
+                                      <SortableEvent id={event.id}>
+                                        <div className="bg-white border rounded-xl shadow-sm overflow-hidden ml-2">
+                                          <div className="p-3 flex items-center justify-between border-b border-slate-100 bg-slate-50/50">
+                                            <div className="flex items-center gap-2">
+                                              <span className="h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: day.color }}>{idx + 1}</span>
+                                              <span className="font-mono text-sm font-bold text-slate-600">{event.time}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full">
+                                              {weather?.icon}
+                                              <span>{weather?.temp}</span>
+                                            </div>
+                                          </div>
+                                          <div className="p-4">
+                                            {(() => { const loc = getEventLocation(event); return (
+                                            <div className="flex justify-between items-start gap-2 mb-2">
+                                              <div>
+                                                <h3 className="font-bold text-slate-900 text-lg leading-tight mb-1">{event.location}</h3>
+                                                <div className="text-sm text-slate-500 font-medium">{event.activity}</div>
+                                              </div>
+                                              <a href={getGoogleMapsUrl(event.location, loc.lat, loc.lng)} target="_blank" rel="noopener noreferrer" className="p-2 bg-slate-100 text-slate-400 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                                                <ExternalLink size={16} />
+                                              </a>
+                                            </div>
+                                            ); })()}
+                                            {event.notes && (
+                                              <div className="text-xs text-slate-500 italic bg-slate-50 p-2 rounded-lg mb-3 border border-slate-100">{event.notes}</div>
+                                            )}
+                                            {eventDetails[event.id] && (
+                                              <div className="text-xs text-slate-600 bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-3 whitespace-pre-wrap">
+                                                <div className="flex items-center gap-1 text-blue-600 font-bold text-[10px] mb-1"><StickyNote size={10} /><span>筆記</span></div>
+                                                {eventDetails[event.id]}
+                                              </div>
+                                            )}
+                                            {event.booking && (
+                                              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                                                <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-100/50">
+                                                  <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs"><Ticket size={14} /><span>住宿預訂</span></div>
+                                                  <span className="text-[10px] bg-white/50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-100">{event.booking.provider}</span>
+                                                </div>
+                                                <div className="space-y-2 text-xs">
+                                                  <div className="flex justify-between"><span className="text-slate-400">預約編號</span><span className="font-mono font-bold text-slate-700">{event.booking.number}</span></div>
+                                                  <div className="flex justify-between"><span className="text-slate-400">金額</span><span className="font-bold text-slate-700">{event.booking.price}</span></div>
+                                                  <div className="flex justify-between"><span className="text-slate-400">付款方式</span><span className="text-slate-700">{event.booking.payment}</span></div>
+                                                </div>
+                                              </div>
+                                            )}
+                                          </div>
                                         </div>
-                                        {eventDetails[event.id]}
-                                      </div>
-                                    )}
-
-                                    {event.booking && (
-                                      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-                                        <div className="flex items-center justify-between mb-2 pb-2 border-b border-amber-100/50">
-                                          <div className="flex items-center gap-1.5 text-amber-700 font-bold text-xs">
-                                            <Ticket size={14} />
-                                            <span>住宿預訂</span>
+                                      </SortableEvent>
+                                      {idx < orderedEvents.length - 1 && (() => {
+                                        const travelTime = getTravelTimeBetween(day.day, idx);
+                                        const isCalc = calculatingTimes[day.day];
+                                        if (!travelTime && !isCalc && !reorderedEvents[day.day]) {
+                                          const nextEvent = orderedEvents[idx + 1];
+                                          if (!nextEvent?.travelTime) return null;
+                                          return (
+                                            <div className="flex items-center justify-center py-1 px-2 ml-2">
+                                              <div className="flex-1 border-t border-dashed border-slate-200" />
+                                              <div className="mx-2 flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white shadow-sm" style={{ backgroundColor: day.color, opacity: 0.85 }}>
+                                                <Car size={11} /><span>{nextEvent.travelTime}</span>
+                                              </div>
+                                              <div className="flex-1 border-t border-dashed border-slate-200" />
+                                            </div>
+                                          );
+                                        }
+                                        if (!travelTime && !isCalc) return null;
+                                        return (
+                                          <div className="flex items-center justify-center py-1 px-2 ml-2">
+                                            <div className="flex-1 border-t border-dashed border-slate-200" />
+                                            <div className="mx-2 flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-white shadow-sm" style={{ backgroundColor: day.color, opacity: 0.85 }}>
+                                              <Car size={11} />
+                                              {isCalc ? <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <span>{travelTime}</span>}
+                                            </div>
+                                            <div className="flex-1 border-t border-dashed border-slate-200" />
                                           </div>
-                                          <span className="text-[10px] bg-white/50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-100">
-                                            {event.booking.provider}
-                                          </span>
-                                        </div>
-                                        <div className="space-y-2 text-xs">
-                                          <div className="flex justify-between">
-                                            <span className="text-slate-400">預約編號</span>
-                                            <span className="font-mono font-bold text-slate-700">{event.booking.number}</span>
-                                          </div>
-                                          <div className="flex justify-between">
-                                            <span className="text-slate-400">金額</span>
-                                            <span className="font-bold text-slate-700">{event.booking.price}</span>
-                                          </div>
-                                          <div className="flex justify-between">
-                                            <span className="text-slate-400">付款方式</span>
-                                            <span className="text-slate-700">{event.booking.payment}</span>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
+                                        );
+                                      })()}
+                                    </React.Fragment>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
+                              </SortableContext>
+                            </DndContext>
                           )}
                         </div>
                       );
