@@ -622,15 +622,16 @@ export const ITINERARY_DATA: DayPlan[] = [
         flight: {
           airline: '星宇航空 STARLUX',
           flightNumber: 'JX863',
-          departureTime: '17:00',
-          arrivalTime: '20:00',
-          departureAirport: 'SDJ 仙台',
-          arrivalAirport: 'TPE 台北桃園',
-          terminal: '',
-          class: '經濟艙',
+          departureTime: '17:15',
+          arrivalTime: '20:35',
+          departureAirport: 'SDJ 仙台國際機場',
+          arrivalAirport: 'TPE 臺灣桃園國際機場',
+          terminal: '直飛',
+          class: '商務艙',
           baggage: '',
           status: 'OK',
-          duration: '04:00'
+          duration: '4h20m',
+          aircraft: 'AIRBUS A321NEO'
         }
       }
     ]

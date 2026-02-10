@@ -34,6 +34,7 @@ export interface TripEvent {
     baggage?: string;
     status?: string;
     duration?: string;
+    aircraft?: string;
   };
 }
 

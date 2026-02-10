@@ -1918,7 +1918,7 @@ const App: React.FC = () => {
                 </h2>
                 <div className="space-y-6">
                   {ITINERARY_DATA.flatMap(day =>
-                    day.events.filter(e => e.flight).map(e => ({ ...e, dayColor: day.color, dayIdx: day.day }))
+                    day.events.filter(e => e.flight).map(e => ({ ...e, dayColor: day.color, dayIdx: day.day, dayDate: day.date }))
                   ).map((event, idx) => (
                     <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-slate-200">
                       {/* Header */}
@@ -1943,7 +1943,9 @@ const App: React.FC = () => {
                           </div>
 
                           <div className="flex-1 flex flex-col items-center w-full md:w-auto">
-                            <div className="text-xs text-slate-400 font-bold mb-1 tracking-wider uppercase">Flight Duration</div>
+                            {event.flight?.aircraft && (
+                              <div className="text-[10px] text-slate-400 font-bold mb-1 tracking-wider uppercase">{event.flight.aircraft}</div>
+                            )}
                             <div className="flex items-center gap-2 w-full justify-center">
                               <div className="h-[2px] bg-slate-200 flex-1 relative">
                                 <div className="absolute right-0 -top-1 w-2 h-2 rounded-full bg-slate-300"></div>
@@ -1954,6 +1956,9 @@ const App: React.FC = () => {
                               </div>
                             </div>
                             <div className="text-xs font-bold text-slate-500 mt-1">{event.flight?.duration}</div>
+                            {event.flight?.terminal && (
+                              <div className="text-[10px] text-slate-400 mt-0.5">{event.flight.terminal}</div>
+                            )}
                           </div>
 
                           <div className="text-center md:text-right">
@@ -1979,7 +1984,7 @@ const App: React.FC = () => {
                           </div>
                           <div>
                             <div className="text-xs text-slate-400 uppercase font-bold mb-1">Date</div>
-                            <div className="font-medium text-slate-700">2026/01/{event.dayIdx === 1 ? '20' : '24'}</div>
+                            <div className="font-medium text-slate-700">{event.dayDate}</div>
                           </div>
                         </div>
                       </div>
