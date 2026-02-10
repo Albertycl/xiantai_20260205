@@ -567,17 +567,14 @@ const App: React.FC = () => {
     return null;
   }, [calculatedTravelTimes]);
 
-  // On reorder loaded from localStorage, calculate driving times
+  // On page load, calculate driving times for all days (staggered to avoid rate limits)
   useEffect(() => {
     if (hasInitializedTravelTimes.current) return;
-    if (Object.keys(reorderedEvents).length === 0) return;
     hasInitializedTravelTimes.current = true;
-    Object.entries(reorderedEvents).forEach(([dayStr]) => {
-      const dayNumber = parseInt(dayStr, 10);
-      const day = ITINERARY_DATA.find(d => d.day === dayNumber);
-      if (day) fetchDrivingTimes(dayNumber, getOrderedEvents(day));
+    ITINERARY_DATA.forEach((day, i) => {
+      setTimeout(() => fetchDrivingTimes(day.day, getOrderedEvents(day)), i * 300);
     });
-  }, [reorderedEvents, getOrderedEvents, fetchDrivingTimes]);
+  }, [getOrderedEvents, fetchDrivingTimes]);
 
   // Handle drag end - reorder events
   const handleDragEnd = useCallback((dayNumber: number) => (event: DragEndEvent) => {
